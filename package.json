@@ -1,0 +1,22 @@
+{
+  "name": "fourquadrant",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/judy-n/FourQuadrant.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/judy-n/FourQuadrant/issues"
+  },
+  "homepage": "https://github.com/judy-n/FourQuadrant#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
