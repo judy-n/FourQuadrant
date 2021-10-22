@@ -10,6 +10,13 @@ async function main(){
         await client.connect();
         // Make the appropriate DB calls
         // await listDatabases(client); 
+        // b = await createBoard(client)
+        // n1 = await createNote(client, b)
+        // n2 = await createNote(client, b)
+        // await readBoard(client, b._id)
+        // await updateNote(client, b, n1, "hi this is a note")
+        // await readNote(client, n1._id)
+        // await readBoard(client, b._id)
         
     } catch (e) {
         console.error(e);
@@ -53,17 +60,6 @@ async function createNote(client, board){
     return newNote;
 }
 
-async function getNotes(board){
-    return board.notes;
-}
-
-async function removeNote(client, board, note){
-    let j = board.notes.indexOf(note);
-    board.notes.splice(j, 1)
-    let q = {_id: board._id};
-    let newV = {$set: board}
-    await client.db("FourQuadrant").collection("Boards").updateOne(q, newV);
-}
 
 async function readBoard(client, id){
     const res = await client.db("FourQuadrant").collection("Boards").findOne({_id: id})
@@ -92,5 +88,20 @@ async function removeBoard(client, board){
     await client.db("FourQuadrant").collection("Boards").deleteOne({_id: board._id})
 }
 
+async function removeNote(client, board, note){
+    let j = board.notes.indexOf(note);
+    board.notes.splice(j, 1)
+    let q = {_id: board._id};
+    let newV = {$set: board}
+    await client.db("FourQuadrant").collection("Notes").deleteOne({_id: note._id});
+    await client.db("FourQuadrant").collection("Boards").updateOne(q, newV);
+}
 
+/* Changes the Note's text to <text>*/
+async function updateNote(client, board, note, text){
+    let k = board.notes.indexOf(note);
+    board.notes[k].text = text;
+    await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
+    await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board});
+}
 
