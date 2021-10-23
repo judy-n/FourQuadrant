@@ -9,14 +9,15 @@ async function main(){
         // Connect to the MongoDB cluster
         await client.connect();
         // Make the appropriate DB calls
+        // testing
         // await listDatabases(client); 
         // b = await createBoard(client)
-        // n1 = await createNote(client, b)
-        // n2 = await createNote(client, b)
-        // await readBoard(client, b._id)
+        // n1 = await createNote(client, b, {urgent: 1, important: 1});
+        // // n2 = await createNote(client, b)
+        // //await readBoard(client, b._id)
         // await updateNote(client, b, n1, "hi this is a note")
         // await readNote(client, n1._id)
-        // await readBoard(client, b._id)
+        // //await readBoard(client, b._id)
         
     } catch (e) {
         console.error(e);
@@ -41,8 +42,9 @@ class Board {
 }
 
 class Note {
-    constructor() {
+    constructor({urgent: x, important: y}) {
         this.text = "";
+        this.quadrant = {urgent: x, important: y};
     }
 }
 
@@ -52,8 +54,8 @@ async function createBoard(client){
     return newBoard;
 }
 
-async function createNote(client, board){
-    const newNote = new Note()
+async function createNote(client, board, quadrant){
+    const newNote = new Note(quadrant)
     await client.db("FourQuadrant").collection("Notes").insertOne(newNote)
     board.notes.push(newNote)
     await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board})
