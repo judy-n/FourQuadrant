@@ -14,10 +14,12 @@ async function main(){
         // b = await createBoard(client)
         // n1 = await createNote(client, b, {urgent: 1, important: 1});
         // // n2 = await createNote(client, b)
-        // //await readBoard(client, b._id)
+        // // //await readBoard(client, b._id)
         // await updateNote(client, b, n1, "hi this is a note")
+        // //await readNote(client, n1._id)
+        // await updateNoteQdt(client, b, n1, {urgent: 0, important: 1});
         // await readNote(client, n1._id)
-        // //await readBoard(client, b._id)
+        // await readBoard(client, b._id)
         
     } catch (e) {
         console.error(e);
@@ -107,3 +109,10 @@ async function updateNote(client, board, note, text){
     await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board});
 }
 
+/* Updates the Note's quadrant position to <quadrant>; should be of the form {urgent: 0, important: 0} */
+async function updateNoteQdt(client, board, note, quadrant){
+    let k = board.notes.indexOf(note);
+    board.notes[k].quadrant = quadrant;
+    await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
+    await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board});
+}
