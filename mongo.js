@@ -116,3 +116,16 @@ async function updateNoteQdt(client, board, note, quadrant){
     await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
     await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board});
 }
+
+module.exports = {
+    Board,
+    Note,
+    createNote,
+    createBoard,
+    readBoard,
+    readNote,
+    removeBoard,
+    removeNote,
+    updateNote,
+    updateNoteQdt
+}
