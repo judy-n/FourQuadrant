@@ -1,8 +1,12 @@
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
+console.log('test', process.env.DB_USERNAME, process.env.DB_PASSWORD)
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.flfdi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+// db is available everywhere
+const client = new MongoClient(uri);
+client.connect().catch(err => console.error(err))
 
 async function main(){
-    const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.flfdi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
     const client = new MongoClient(uri);
  
     try {
@@ -35,7 +39,7 @@ async function listDatabases(client){
     databasesList.databases.forEach(db => console.log(` - ${db.name}`));
 };
 
-main().catch(console.error);
+// main().catch(console.error);
 
 class Board {
     constructor() {
@@ -72,6 +76,17 @@ async function readBoard(client, id){
     }
     else {
         console.log("Couldn't find this Board")
+    }
+}
+
+// just for examples, delete this :))
+async function readAllBoards() {
+    const res = await client.db("FourQuadrant").collection("Boards").find().toArray()
+    if (res) {
+        // console.log(res)
+        return res
+    } else {
+        console.log("Couldn't find board")
     }
 }
 
@@ -127,5 +142,6 @@ module.exports = {
     removeBoard,
     removeNote,
     updateNote,
-    updateNoteQdt
+    updateNoteQdt,
+    readAllBoards,
 }
