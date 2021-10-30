@@ -5,6 +5,7 @@ const port = 3000
 const router = require('./router')
 
 app.use(router);
+app.use(express.static(path.join(__dirname, '/static')))
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/index.html'));

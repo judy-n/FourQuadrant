@@ -7,25 +7,39 @@ function isMongoError (error) {
   return typeof error === 'object' && error !== null && error.name === 'MongoNetworkError'
 }
 
-router.get('/api/allBoards/:id', (req, res, next) => {
-  console.log('given id', req.params.id)
-  mongo.readAllBoards().then(boards => {
-    if (boards) {
-      // console.log('in here', boards)
-      res.send({boards: boards})
+function handleError (err, res) {
+  if (isMongoError) {
+    res.status(500).send('internal server error')
+  } else {
+    res.status(400).send('bad request')
+  }
+}
+
+router.post('/createBoard', (req, res, next) => {
+  mongo.createBoard().then(board => {
+    if (board) {
+      res.send({board: board})
     } else {
-      console.error('an error occured')
-      next()
+      res.status(500, 'unknown error')
     }
   }).catch(err => {
-    if (isMongoError(err)) {
-      res.status(500).send('internal server error')
-      next()
-    } else {
-      res.status(400).send('bad request')
-      next()
-    }
+    handleError(err, res)
+    console.log('error', err)
   })
+})
+
+router.post('/createNote/:board_id', async (req, res, next) => {
+  const { quadrant } = req.body
+  try {
+    const board = await mongo.readBoard(req.params.board_id)
+    const newNote = await mongo.createNote(board, quadrant)
+    if (newNote) {
+      res.send({newNote: newNote})
+    }
+  } catch(e) {
+    handleError(e, res)
+    console.log('error', e)
+  }
 })
 
 module.exports = router

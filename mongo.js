@@ -1,45 +1,15 @@
 const {MongoClient} = require('mongodb');
 require('dotenv').config();
-console.log('test', process.env.DB_USERNAME, process.env.DB_PASSWORD)
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.flfdi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-// db is available everywhere
 const client = new MongoClient(uri);
 client.connect().catch(err => console.error(err))
 
-async function main(){
-    const client = new MongoClient(uri);
- 
-    try {
-        // Connect to the MongoDB cluster
-        await client.connect();
-        // Make the appropriate DB calls
-        // testing
-        // await listDatabases(client); 
-        // b = await createBoard(client)
-        // n1 = await createNote(client, b, {urgent: 1, important: 1});
-        // // n2 = await createNote(client, b)
-        // // //await readBoard(client, b._id)
-        // await updateNote(client, b, n1, "hi this is a note")
-        // //await readNote(client, n1._id)
-        // await updateNoteQdt(client, b, n1, {urgent: 0, important: 1});
-        // await readNote(client, n1._id)
-        // await readBoard(client, b._id)
-        
-    } catch (e) {
-        console.error(e);
-    } finally {
-        await client.close();
-    }
-}
-
-async function listDatabases(client){
+async function listDatabases(){
     databasesList = await client.db().admin().listDatabases();
  
     console.log("Databases:");
     databasesList.databases.forEach(db => console.log(` - ${db.name}`));
 };
-
-// main().catch(console.error);
 
 class Board {
     constructor() {
@@ -54,13 +24,13 @@ class Note {
     }
 }
 
-async function createBoard(client){
+async function createBoard(){
     const newBoard = new Board()
     await client.db("FourQuadrant").collection("Boards").insertOne(newBoard)
     return newBoard;
 }
 
-async function createNote(client, board, quadrant){
+async function createNote(board, quadrant){
     const newNote = new Note(quadrant)
     await client.db("FourQuadrant").collection("Notes").insertOne(newNote)
     board.notes.push(newNote)
@@ -69,28 +39,18 @@ async function createNote(client, board, quadrant){
 }
 
 
-async function readBoard(client, id){
+async function readBoard(id){
     const res = await client.db("FourQuadrant").collection("Boards").findOne({_id: id})
     if (res) {
         console.log(res)
+        res.send(res)
     }
     else {
         console.log("Couldn't find this Board")
     }
 }
 
-// just for examples, delete this :))
-async function readAllBoards() {
-    const res = await client.db("FourQuadrant").collection("Boards").find().toArray()
-    if (res) {
-        // console.log(res)
-        return res
-    } else {
-        console.log("Couldn't find board")
-    }
-}
-
-async function readNote(client, id){
+async function readNote(id){
     const res = await client.db("FourQuadrant").collection("Notes").findOne({_id: id})
     if (res) {
         console.log(res)
@@ -100,14 +60,14 @@ async function readNote(client, id){
     }
 }
 
-async function removeBoard(client, board){
+async function removeBoard(board){
     for (let i = 0; i<board.notes.length ; i++){
         await client.db("FourQuadrant").collection("Notes").deleteOne({_id: board.notes[i]._id});
     }
     await client.db("FourQuadrant").collection("Boards").deleteOne({_id: board._id})
 }
 
-async function removeNote(client, board, note){
+async function removeNote(board, note){
     let j = board.notes.indexOf(note);
     board.notes.splice(j, 1)
     let q = {_id: board._id};
@@ -117,7 +77,7 @@ async function removeNote(client, board, note){
 }
 
 /* Changes the Note's text to <text>*/
-async function updateNote(client, board, note, text){
+async function updateNote(board, note, text){
     let k = board.notes.indexOf(note);
     board.notes[k].text = text;
     await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
@@ -125,7 +85,7 @@ async function updateNote(client, board, note, text){
 }
 
 /* Updates the Note's quadrant position to <quadrant>; should be of the form {urgent: 0, important: 0} */
-async function updateNoteQdt(client, board, note, quadrant){
+async function updateNoteQdt(board, note, quadrant){
     let k = board.notes.indexOf(note);
     board.notes[k].quadrant = quadrant;
     await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
@@ -143,5 +103,4 @@ module.exports = {
     removeNote,
     updateNote,
     updateNoteQdt,
-    readAllBoards,
 }
