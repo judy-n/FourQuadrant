@@ -7,15 +7,15 @@ const router = require('./router')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(express.static(path.join(__dirname, '/static')))
+app.use(express.static(path.join(__dirname, '/client/static')))
 app.use('/api', router);
 
 app.get('/', function(req, res) {
-  res.sendFile(path.join(__dirname, '/index.html'));
+  res.sendFile(path.join(__dirname, '/client/index.html'));
 })
 
 app.get('/:boardID', function(req, res){
-  res.sendFile(path.join(__dirname, '/board.html'))
+  res.sendFile(path.join(__dirname, '/client/board.html'))
 })
 
 app.listen(port, () => {
