@@ -1,0 +1,34 @@
+.stuff {
+  display: grid;
+  grid-template-columns: 2fr 0.5fr;
+  height: 800px;
+}
+.quadrant {
+  background-color: beige;
+  border-color: 1px solid black;
+}
+
+.h-titles {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.v-titles {
+  display: flex;
+  flex-direction: row;
+  transform-origin: top left;
+  /* justify-content: space-evenly; */
+  transform: rotate(-90deg) translateX(-50%);
+  margin-left: 10px;
+}
+
+.q-sidebar {
+  background-color: cornflowerblue;
+}
+
+.q-container {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  margin-left: 100px;
+}
