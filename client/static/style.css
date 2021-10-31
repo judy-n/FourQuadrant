@@ -105,11 +105,16 @@ body {
   z-index: 1;
   color: white;
   font-size: 50px;
+  text-shadow: 1px 1px 3px black;
 }
 
 .site-title {
   margin: 50px;
   z-index: 1;
+  background: darkslateblue;
+  border-radius: 15px;
+  box-shadow: 1px 1px 3px black;
+  padding: 15px;
 }
 
 .desc {

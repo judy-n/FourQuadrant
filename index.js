@@ -1,7 +1,10 @@
 const express = require('express')
 const path = require('path')
-const bodyParser = require('body-parser')
+const http = require('http')
 const app = express()
+const server = http.createServer(app)
+const { Server } = require('socket.io')
+const io = new Server(server)
 const port = 3000
 const router = require('./router')
 
@@ -18,7 +21,18 @@ app.get('/:boardID', function(req, res){
   res.sendFile(path.join(__dirname, '/client/board.html'))
 })
 
-app.listen(port, () => {
+// socket.io functions
+io.on('connection', socket => {
+  console.log('a user connected')
+  socket.on('connected to', board_id => {
+    console.log(`user is connected to board ${board_id}`)
+  })
+  socket.on('disconnect', () => {
+    console.log('user disconnected')
+  })
+})
+
+server.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
 
