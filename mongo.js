@@ -54,6 +54,18 @@ async function readBoard(id){
     }
 }
 
+async function populateNotes(board) {
+    // call this function when you need note objects, not just ids
+    const notes = board.notes.map(id => new ObjectId(id))
+    const noteObjs = await client.db("FourQuadrant").collection("Notes").find({ _id: { $in: notes }})
+    if (noteObjs) {
+        return noteObjs
+    } else {
+        console.log('unknown error')
+        return null
+    }
+}
+
 async function readNote(id){
     id = new ObjectId(id)
     const res = await client.db("FourQuadrant").collection("Notes").findOne({_id: id})
@@ -92,6 +104,7 @@ module.exports = {
     createNote,
     createBoard,
     readBoard,
+    populateNotes,
     readNote,
     removeBoard,
     removeNote,
