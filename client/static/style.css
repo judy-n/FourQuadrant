@@ -1,7 +1,7 @@
 body {
   display: grid;
   place-items: center;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Space Mono", monospace;
 }
 
 .container {
@@ -48,7 +48,8 @@ body {
 .title {
   color: black;
   font-weight: 300;
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: "Space Mono", monospace;
+  font-size: 15px;
   position: absolute;
   left: 20px;
   top: 15px;
@@ -103,26 +104,29 @@ body {
 
 .site-title h2 {
   z-index: 1;
-  color: white;
-  font-size: 50px;
-  text-shadow: 1px 1px 3px black;
+  color: black;
+  background-color: rgb(226, 242, 254);
+  font-size: 40px;
+  font-family: "Space Mono", monospace;
+  /* text-shadow: 1px 1px 3px black; */
 }
 
 .site-title {
   margin: 50px;
   z-index: 1;
-  background: darkslateblue;
+  background: white;
   border-radius: 15px;
-  box-shadow: 1px 1px 3px black;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
   padding: 15px;
 }
 
 .desc {
   /* margin-top: 30px; */
   align-self: center;
-  margin-top: 70px;
+  margin-top: 90px;
   margin-bottom: 30px;
   margin-left: 20px;
+  font-family: "Space Mono", monospace;
 }
 
 .desc p {
@@ -133,8 +137,14 @@ body {
   margin: 20px;
   background-color: rgb(226, 242, 254);
   color: rgb(108, 124, 136);
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
 
 .mui-btn.mui-btn--raised:hover {
   color: rgb(108, 124, 136);
+}
+
+.cta {
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  font-family: "Space Mono", monospace;
 }
