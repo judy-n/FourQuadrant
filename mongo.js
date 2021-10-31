@@ -29,7 +29,7 @@ class Note {
 async function createBoard(){
     const newBoard = new Board()
     const resBoard = await client.db("FourQuadrant").collection("Boards").insertOne(newBoard)
-    return {resBoard, newBoard};
+    return {newBoard};
 }
 
 async function createNote(board, quadrant){
