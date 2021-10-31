@@ -1,4 +1,4 @@
-const {MongoClient} = require('mongodb');
+const {MongoClient, ObjectId} = require('mongodb');
 require('dotenv').config();
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.flfdi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri);
@@ -13,12 +13,14 @@ async function listDatabases(){
 
 class Board {
     constructor() {
+        this._id = new ObjectId()
         this.notes = []
     }
 }
 
 class Note {
     constructor({urgent: x, important: y}) {
+        this._id = new ObjectId()
         this.text = "";
         this.quadrant = {urgent: x, important: y};
     }
@@ -26,37 +28,42 @@ class Note {
 
 async function createBoard(){
     const newBoard = new Board()
-    await client.db("FourQuadrant").collection("Boards").insertOne(newBoard)
-    return newBoard;
+    const resBoard = await client.db("FourQuadrant").collection("Boards").insertOne(newBoard)
+    return {resBoard, newBoard};
 }
 
 async function createNote(board, quadrant){
     const newNote = new Note(quadrant)
     await client.db("FourQuadrant").collection("Notes").insertOne(newNote)
-    board.notes.push(newNote)
+    board.notes.push(newNote._id)
     await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board})
     return newNote;
 }
 
 
 async function readBoard(id){
+    id = new ObjectId(id)
     const res = await client.db("FourQuadrant").collection("Boards").findOne({_id: id})
     if (res) {
         console.log(res)
-        res.send(res)
+        return res
     }
     else {
         console.log("Couldn't find this Board")
+        return null
     }
 }
 
 async function readNote(id){
+    id = new ObjectId(id)
     const res = await client.db("FourQuadrant").collection("Notes").findOne({_id: id})
     if (res) {
         console.log(res)
+        return res
     }
     else {
         console.log("Couldn't find this Note")
+        return null
     }
 }
 
@@ -65,31 +72,18 @@ async function removeBoard(board){
         await client.db("FourQuadrant").collection("Notes").deleteOne({_id: board.notes[i]._id});
     }
     await client.db("FourQuadrant").collection("Boards").deleteOne({_id: board._id})
+    return
 }
 
-async function removeNote(board, note){
-    let j = board.notes.indexOf(note);
-    board.notes.splice(j, 1)
-    let q = {_id: board._id};
-    let newV = {$set: board}
+async function removeNote(note){
     await client.db("FourQuadrant").collection("Notes").deleteOne({_id: note._id});
-    await client.db("FourQuadrant").collection("Boards").updateOne(q, newV);
+    await client.db("FourQuadrant").collection("Boards").updateOne({ notes: note._id }, { $pull: { notes: note._id } })
+    return
 }
 
 /* Changes the Note's text to <text>*/
-async function updateNote(board, note, text){
-    let k = board.notes.indexOf(note);
-    board.notes[k].text = text;
+async function updateNote(note){
     await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
-    await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board});
-}
-
-/* Updates the Note's quadrant position to <quadrant>; should be of the form {urgent: 0, important: 0} */
-async function updateNoteQdt(board, note, quadrant){
-    let k = board.notes.indexOf(note);
-    board.notes[k].quadrant = quadrant;
-    await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
-    await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board});
 }
 
 module.exports = {
@@ -102,5 +96,4 @@ module.exports = {
     removeBoard,
     removeNote,
     updateNote,
-    updateNoteQdt,
 }
