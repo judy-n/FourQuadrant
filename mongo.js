@@ -29,7 +29,7 @@ class Note {
 async function createBoard(){
     const newBoard = new Board()
     const resBoard = await client.db("FourQuadrant").collection("Boards").insertOne(newBoard)
-    return {resBoard, newBoard};
+    return {newBoard};
 }
 
 async function createNote(board, quadrant){
@@ -50,6 +50,18 @@ async function readBoard(id){
     }
     else {
         console.log("Couldn't find this Board")
+        return null
+    }
+}
+
+async function populateNotes(board) {
+    // call this function when you need note objects, not just ids
+    const notes = board.notes.map(id => new ObjectId(id))
+    const noteObjs = await client.db("FourQuadrant").collection("Notes").find({ _id: { $in: notes }})
+    if (noteObjs) {
+        return noteObjs
+    } else {
+        console.log('unknown error')
         return null
     }
 }
@@ -92,6 +104,7 @@ module.exports = {
     createNote,
     createBoard,
     readBoard,
+    populateNotes,
     readNote,
     removeBoard,
     removeNote,

@@ -65,18 +65,20 @@ router.post('/note/:board_id', idChecker, async (req, res, next) => {
   }
 })
 
-router.get('/board/:board_id', idChecker, (req, res, next) => {
-  mongo.readBoard(req.params.board_id).then(board => {
+router.get('/board/:board_id', idChecker, async (req, res, next) => {
+  try {
+    let board = await mongo.readBoard(req.params.board_id)
+    board = await mongo.populateNotes(board)
     if (board) {
-      res.send({board: board})
+      res.send({board})
     } else {
       res.status(404).send('board not found')
     }
-  }).catch(err => {
-    handleError(err)
+  } catch(e) {
+    handleError(e)
     console.log('error', e)
     next()
-  })
+  }
 })
 
 router.get('/note/:note_id', idChecker, (req, res, next) => {
