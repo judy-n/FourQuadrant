@@ -1,34 +1,92 @@
-.stuff {
+body {
   display: grid;
-  grid-template-columns: 2fr 0.5fr;
-  height: 800px;
+  width: 100vw;
+  height: 100vh;
+  grid-template-areas: 
+            "x a a a s"
+            "b c c c s"
+            "b c c c s";
+  grid-template-rows: 1fr 7fr;
+  grid-template-columns: 1fr 7fr 1fr;
+  margin: 0;
 }
-.quadrant {
-  background-color: beige;
-  border-color: 1px solid black;
+
+body>div {
+  display: grid;
 }
 
 .h-titles {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
+  grid-area: a;
+  background: blue;
+  display: grid;
+  grid-template-areas: "left right";
+  height: min-content;
+}
+
+.ht1 {
+  grid-area: left;
+  text-align: center;
+}
+
+.ht2 {
+  grid-area: right;
+  text-align: center;
 }
 
 .v-titles {
-  display: flex;
-  flex-direction: row;
-  transform-origin: top left;
-  /* justify-content: space-evenly; */
-  transform: rotate(-90deg) translateX(-50%);
-  margin-left: 10px;
+  grid-area: b;
+  background: red;
+  width: 100%;
+  height: 100%;
+  grid-template-areas: 
+                "up"
+                "bot";
 }
 
-.q-sidebar {
-  background-color: cornflowerblue;
+.vt1 {
+  grid-area: bot;
+}
+
+.vt2 {
+  grid-area: up;
 }
 
 .q-container {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  margin-left: 100px;
+  grid-area: c;
+  background: green;
+  width: 100%;
+  height: 100%;
+  grid-template-areas: 
+              "q1 q2"
+              "q3 q4";
+}
+
+.q1 {
+  grid-area: q1;
+}
+
+.q2 {
+  grid-area: q2;
+}
+
+.q3 {
+  grid-area: q3;
+}
+
+.q4 {
+  grid-area: q4;
+}
+
+.q-sidebar {
+  grid-area: s;
+  background: purple;
+  width: 100%;
+  height: 100%;
+}
+
+.rotate {
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  text-align: center;
+  width: min-content;
 }
