@@ -1,9 +1,6 @@
 body {
   display: grid;
   place-items: center;
-  /* align-content: center;
-  justify-content: center;
-  flex-direction: column; */
   font-family: "IBM Plex Sans", sans-serif;
 }
 
@@ -125,4 +122,14 @@ body {
 
 .desc p {
   font-size: 8px;
+}
+
+.mui-btn.mui-btn--raised {
+  margin: 20px;
+  background-color: rgb(226, 242, 254);
+  color: rgb(108, 124, 136);
+}
+
+.mui-btn.mui-btn--raised:hover {
+  color: rgb(108, 124, 136);
 }
