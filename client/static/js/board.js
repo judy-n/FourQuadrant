@@ -1,7 +1,7 @@
 'use strict';
+
 const socket = io()
 const board_id = window.location.href.split('/')[3]
-let notes = []
 const tempQuadrant = {important: 0, urgent: 0}
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -26,13 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
     createNote(board_id, note).then(newNote => {
       socket.emit('note created', {note: newNote, board_id})
       createSticky(newNote._id)
-    })
+    }).catch(e => console.log('an unknown error occurred'))
   }
-  const sendUpdateNote = (note) => {
-    socket.emit('note update', {note, board_id})
-  }
+  // const sendUpdateNote = (note_id, noteEl) => {
+  //   const title = noteEl.querySelector('h3').innerText
+  //   let text = noteEl.querySelector('p').innerText //may need to change this idk
+  //   const note = { title, text, tempQuadrant }
+  //   updateNote(note).then(resNote => {
+  //     socket.emit('note update', {note: resNote, board_id})
+  //   })
+  // } for later
   const sendDeleteNote = (note_id) => {
-    socket.emit('note delete', {note_id, board_id})
+    deleteNote(note_id).then(note => {
+      socket.emit('note delete', {note_id, board_id})
+    })
   }
   
   const receiveCreatedNote = ({note, io_board_id}) => {
@@ -50,17 +57,23 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   const receiveDeleteNote = ({note_id, io_board_id}) => {
     if (io_board_id === board_id) {
-      // delete the note
+      const el = document.querySelector(`.sticky[id="${note_id}"]`)
+      el.parentElement.removeChild(el)
     }
   }
 
   socket.on('receive note', ({note, io_board_id}) => {
-    console.log(note, io_board_id)
     receiveCreatedNote({note, io_board_id})
   })
 
+  socket.on('receive delete', ({note_id, io_board_id}) => {
+    receiveDeleteNote({note_id, io_board_id})
+  })
+
   const deleteSticky = e => {
+    const id = e.target.parentElement.getAttribute('id')
     e.target.parentNode.remove();
+    sendDeleteNote(id)
   };
 
   let isDragging = false;
@@ -178,8 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // load notes
   getBoard(board_id).then(board => {
     if (board) {
-      notes = notes.concat(board.notes)
-      notes.forEach(note => {
+      board.notes.forEach(note => {
         loadSticky(note._id, note.title, note.text)
       })
     } else {

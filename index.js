@@ -44,7 +44,7 @@ io.on('connection', socket => {
   })
 
   socket.on('note delete', ({note_id, board_id}) => {
-    socket.broadcase.emit('receive delete', {note_id, io_board_id: board_id})
+    socket.broadcast.emit('receive delete', {note_id, io_board_id: board_id})
   })
 })
 
