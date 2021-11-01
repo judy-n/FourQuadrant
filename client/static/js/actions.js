@@ -11,8 +11,8 @@ const createBoard = () => {
         .catch(err => console.error)
 }
 
-const createNote = (board_id, quadrant) => {
-    return instance.post(`/note/${board_id}`, quadrant)
+const createNote = (board_id, note) => {
+    return instance.post(`/note/${board_id}`, {note})
         .then(res => res.data.newNote)
         .catch(err => console.error)
 }
