@@ -43,6 +43,10 @@ io.on('connection', socket => {
     socket.broadcast.emit('receive update', {note, io_board_id: board_id})
   })
 
+  socket.on('note move', ({note_id, pos, board_id}) => {
+    socket.broadcast.emit('receive move', {note_id, pos, io_board_id: board_id})
+  })
+
   socket.on('note delete', ({note_id, board_id}) => {
     socket.broadcast.emit('receive delete', {note_id, io_board_id: board_id})
   })
