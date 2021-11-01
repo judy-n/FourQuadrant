@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function openPopup() {
-  link = window.location.href;
+  const link = window.location.href;
   Swal.fire({
     title: 'Share this board!',
     text: 'Click the button to copy the link & share it with others!',
