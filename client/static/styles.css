@@ -126,9 +126,10 @@ h1 {
   user-select: none;
 }
 .sticky {
-  background: linear-gradient(to left bottom, #d4fc78, #99e5a2);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-  color: #00243f;
+  /* background: linear-gradient(to left bottom, #d4fc78, #99e5a2); */
+  background: #f4e285;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  color: black;
   /* 0 0 150px rgba(0, 0, 0, 0.2); */
   cursor: grab;
   display: inline-block;
@@ -138,12 +139,11 @@ h1 {
 }
 .sticky h3,
 .sticky p {
-  /* color: #0065b3; */
-  color: #00243f;
+  color: black;
   pointer-events: none;
 }
 .sticky h3 {
-  border-bottom: dashed 2px #0085e8;
+  border-bottom: dashed 2px #e0be15;
   margin: 0 0 1rem;
   min-height: 1.3rem;
   padding: 0 1.5rem 0.25rem 0;
@@ -153,7 +153,7 @@ h1 {
   min-height: 9rem;
 }
 .sticky .deletesticky {
-  color: #0085e8;
+  color: #e0be15;
   cursor: pointer;
   font-size: 2rem;
   position: absolute;
@@ -179,7 +179,7 @@ h1 {
   border: 2px dashed #577399;
   border-radius: 0.25rem;
   color: #f7f7ff;
-  font-family: "Space", monospace;
+  font-family: "Space Mono", monospace;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -197,7 +197,7 @@ button.button {
   -moz-user-select: none;
   -ms-user-select: none;
   -webkit-user-select: none;
-  background-color: #fee485;
+  background-color: #f4e285;
   border-radius: 0.25rem;
   border: 1px solid transparent;
   color: #577399;
