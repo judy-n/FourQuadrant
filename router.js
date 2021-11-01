@@ -18,12 +18,12 @@ function handleError (err, res) {
 
 const idChecker = async (req, res, next) => {
   if (req.params.board_id && !ObjectId.isValid(req.params.board_id)) {
-    log('invalid board id:', req.params.board_id)
+    console.log('invalid board id:', req.params.board_id)
     res.status(404).send('invalid board id')
     return
   }
   if (req.params.note_id && !ObjectId.isValid(req.params.note_id)) {
-    log('invalid note id:', req.params.note_id)
+    console.log('invalid note id:', req.params.note_id)
     res.status(404).send('invalid note id')
     return
   }
@@ -45,14 +45,14 @@ router.post('/board', (req, res, next) => {
 })
 
 router.post('/note/:board_id', idChecker, async (req, res, next) => {
-  const { quadrant } = req.body
+  const { note } = req.body
   try {
     const board = await mongo.readBoard(req.params.board_id)
     if (!board) {
       console.log('board not found')
       res.status(404).send('board not found')
     }
-    const newNote = await mongo.createNote(board, quadrant)
+    const newNote = await mongo.createNote(board, note)
     if (newNote) {
       res.send({newNote: newNote})
     } else {

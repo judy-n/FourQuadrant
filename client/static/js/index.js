@@ -4,7 +4,9 @@ const newBoard = async () => {
   try {
     const board = await createBoard()
     if (board) {
-      window.location.href = `/${board._id}`
+      setTimeout(() => {
+        window.location.href = `/${board._id}`
+      }, 1500)
     } else {
       console.log('could not create board')
     }

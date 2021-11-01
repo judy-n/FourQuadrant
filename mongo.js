@@ -19,10 +19,11 @@ class Board {
 }
 
 class Note {
-    constructor({urgent: x, important: y}) {
-        this._id = new ObjectId()
-        this.text = "";
-        this.quadrant = {urgent: x, important: y};
+    constructor({title, text, quadrant}) {
+        this._id = new ObjectId();
+        this.title = title;
+        this.text = text;
+        this.quadrant = quadrant;
     }
 }
 
@@ -32,8 +33,8 @@ async function createBoard(){
     return newBoard;
 }
 
-async function createNote(board, quadrant){
-    const newNote = new Note(quadrant)
+async function createNote(board, note){
+    const newNote = new Note(note)
     await client.db("FourQuadrant").collection("Notes").insertOne(newNote)
     board.notes.push(newNote._id)
     await client.db("FourQuadrant").collection("Boards").updateOne({_id: board._id}, {$set: board})
@@ -45,7 +46,6 @@ async function readBoard(id){
     id = new ObjectId(id)
     const res = await client.db("FourQuadrant").collection("Boards").findOne({_id: id})
     if (res) {
-        console.log(res)
         return res
     }
     else {
@@ -57,9 +57,12 @@ async function readBoard(id){
 async function populateNotes(board) {
     // call this function when you need note objects, not just ids
     const notes = board.notes.map(id => new ObjectId(id))
-    const noteObjs = await client.db("FourQuadrant").collection("Notes").find({ _id: { $in: notes }})
+    const noteObjs = await client.db("FourQuadrant").collection("Notes").find({ _id: { $in: notes }}).toArray()
     if (noteObjs) {
-        return noteObjs
+        return ({
+            ...board,
+            notes: noteObjs
+        })
     } else {
         console.log('unknown error')
         return null

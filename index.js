@@ -17,18 +17,34 @@ app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/client/index.html'));
 })
 
+app.get('/undefined', function(req, res) {
+  res.send('Error loading board :(')
+})
+
 app.get('/:boardID', function(req, res){
   res.sendFile(path.join(__dirname, '/client/board.html'))
 })
 
 // socket.io functions
+/**
+ * Functions we need for sockets:
+ * note: create new
+ * note: update text
+ * note: update position
+ * note: delete
+ * currently probly wont scale great - 
+ */
 io.on('connection', socket => {
-  console.log('a user connected')
-  socket.on('connected to', board_id => {
-    console.log(`user is connected to board ${board_id}`)
+  socket.on('note created', ({note, board_id}) => {
+    socket.broadcast.emit('receive note', {note, io_board_id: board_id})
   })
-  socket.on('disconnect', () => {
-    console.log('user disconnected')
+
+  socket.on('note update', ({note, board_id}) => {
+    socket.broadcast.emit('receive update', {note, io_board_id: board_id})
+  })
+
+  socket.on('note delete', ({note_id, board_id}) => {
+    socket.broadcase.emit('receive delete', {note_id, io_board_id: board_id})
   })
 })
 
