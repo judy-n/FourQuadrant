@@ -98,7 +98,8 @@ async function removeNote(note){
 
 /* Changes the Note's text to <text>*/
 async function updateNote(note){
-    await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
+    note._id = new ObjectId(note._id)
+    const res = await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
 }
 
 module.exports = {

@@ -29,14 +29,13 @@ document.addEventListener('DOMContentLoaded', () => {
       createSticky(newNote._id)
     }).catch(e => console.log('an unknown error occurred'))
   }
-  // const sendUpdateNote = (note_id, noteEl) => {
-  //   const title = noteEl.querySelector('h3').innerText
-  //   let text = noteEl.querySelector('p').innerText //may need to change this idk
-  //   const note = { title, text, tempQuadrant }
-  //   updateNote(note).then(resNote => {
-  //     socket.emit('note update', {note: resNote, board_id})
-  //   })
-  // } for later
+  const sendUpdateNote = (_id, title, text) => {
+    const note = { _id, title, text, tempQuadrant }
+    updateNote(note).then(resNote => {
+      socket.emit('note update', {note: resNote, board_id})
+      console.log('up conf', resNote)
+    }).catch(e => console.log('an error occurred'))
+  }
   const sendDeleteNote = (note_id) => {
     deleteNote(note_id).then(note => {
       socket.emit('note delete', {note_id, board_id})
@@ -46,14 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const receiveCreatedNote = ({note, io_board_id}) => {
     if (io_board_id === board_id) {
       loadSticky(note._id, note.title, note.text)
-    } else {
-      console.log('wrong', io_board_id, board_id)
     }
-    console.log('at least')
   }
   const receiveUpdatedNote = ({note, io_board_id}) => {
     if (io_board_id === board_id) {
-      // update note here LOL
+      const noteEL = document.querySelector(`.sticky[id="${note._id}"]`)
+      noteEL.querySelector('h3').innerText = note.title
+      noteEL.querySelector('p').innerText = note.text
     }
   }
   const receiveDeleteNote = ({note_id, io_board_id}) => {
@@ -65,6 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   socket.on('receive note', ({note, io_board_id}) => {
     receiveCreatedNote({note, io_board_id})
+  })
+
+  socket.on('receive update', ({note, io_board_id}) => {
+    receiveUpdatedNote({note, io_board_id})
   })
 
   socket.on('receive delete', ({note_id, io_board_id}) => {
@@ -96,23 +98,36 @@ document.addEventListener('DOMContentLoaded', () => {
     sticky.querySelector('.editsticky').innerText = 'Update'
   }
 
-  const blurInputs = e => {
+  const blurInputs = async (e) => {
     const sticky = e.target.parentElement
-    const h3 = document.createElement('h3')
-    h3.classList = sticky.querySelector('.input-h3').classList
-    h3.classList.remove('input-h3')
-    h3.innerText = sticky.querySelector('.input-h3').value
-    const p = document.createElement('p')
-    p.classList = sticky.querySelector('.input-p').classList
-    p.classList.remove('input-p')
-    p.innerText = sticky.querySelector('.input-p').value
-    sticky.querySelector('.input-h3').remove()
-    sticky.querySelector('.input-p').remove()
-    sticky.appendChild(h3)
-    sticky.appendChild(p)
-    sticky.querySelector('.editsticky').removeEventListener('click', blurInputs, false)
-    sticky.querySelector('.editsticky').addEventListener('click', editSticky)
-    sticky.querySelector('.editsticky').innerText = 'Edit'
+    // send updates
+    const id = sticky.getAttribute('id')
+    const title = sticky.querySelector('.input-h3').value
+    const text = sticky.querySelector('.input-p').value
+    try {
+      await sendUpdateNote(id, title, text)
+      console.log('up sent', id, title, text)
+    } catch(e) {
+      console.log('an error occured')
+      return
+    } finally {
+      // reset note
+      const h3 = document.createElement('h3')
+      h3.classList = sticky.querySelector('.input-h3').classList
+      h3.classList.remove('input-h3')
+      h3.innerText = title
+      const p = document.createElement('p')
+      p.classList = sticky.querySelector('.input-p').classList
+      p.classList.remove('input-p')
+      p.innerText = text
+      sticky.querySelector('.input-h3').remove()
+      sticky.querySelector('.input-p').remove()
+      sticky.appendChild(h3)
+      sticky.appendChild(p)
+      sticky.querySelector('.editsticky').removeEventListener('click', blurInputs, false)
+      sticky.querySelector('.editsticky').addEventListener('click', editSticky)
+      sticky.querySelector('.editsticky').innerText = 'Edit'
+    }
   }
 
   let isDragging = false;

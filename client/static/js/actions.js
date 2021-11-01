@@ -42,7 +42,7 @@ const deleteNote = (note_id) => {
 }
 
 const updateNote = (note) => {
-    return instance.patch('/note', note)
+    return instance.patch('/note', {note})
         .then(res => res.data.note)
         .catch(err => console.error)
 }

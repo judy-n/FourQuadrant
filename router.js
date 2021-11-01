@@ -75,7 +75,7 @@ router.get('/board/:board_id', idChecker, async (req, res, next) => {
       res.status(404).send('board not found')
     }
   } catch(e) {
-    handleError(e)
+    handleError(e, res)
     console.log('error', e)
     next()
   }
@@ -89,7 +89,7 @@ router.get('/note/:note_id', idChecker, (req, res, next) => {
       res.status(404).send('board not found')
     }
   }).catch(err => {
-    handleError(err)
+    handleError(err, res)
     console.log('error', e)
     next()
   })
@@ -105,7 +105,7 @@ router.delete('/board/:board_id', idChecker, async (req, res, next) => {
       res.status(404).send('board not found')
     }
   } catch (e) {
-    handleError(err)
+    handleError(err, res)
     console.log('error', e)
     next()
   }
@@ -121,7 +121,7 @@ router.delete('/note/:note_id', idChecker, async (req, res, next) => {
       res.status(404).send('note not found')
     }
   } catch (e) {
-    handleError(err)
+    handleError(err, res)
     console.log('error', e)
     next()
   }
@@ -133,7 +133,7 @@ router.patch('/note', async (req, res, next) => {
     await mongo.updateNote(note)
     res.send({note})
   } catch (e) {
-    handleError(e)
+    handleError(e, res)
     console.log('error', e)
     next()
   }
