@@ -139,4 +139,16 @@ router.patch('/note', async (req, res, next) => {
   }
 })
 
+router.patch('/note/:note_id/position', idChecker, async (req, res, next) => {
+  const { pos } = req.body
+  try {
+    await mongo.updateNotePos(req.params.note_id, pos)
+    res.send({pos})
+  } catch (e) {
+    handleError(e, res)
+    console.log('error', e)
+    next()
+  }
+})
+
 module.exports = router

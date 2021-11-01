@@ -46,3 +46,9 @@ const updateNote = (note) => {
         .then(res => res.data.note)
         .catch(err => console.error)
 }
+
+const updateNotePos = (note_id, pos) => {
+    return instance.patch(`/note/${note_id}/position`, {pos})
+        .then(res => res.data.pos)
+        .catch(err => console.error)
+}

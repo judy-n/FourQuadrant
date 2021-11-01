@@ -19,11 +19,11 @@ class Board {
 }
 
 class Note {
-    constructor({title, text, quadrant}) {
+    constructor({title, text, pos}) {
         this._id = new ObjectId();
         this.title = title;
         this.text = text;
-        this.quadrant = quadrant;
+        this.pos = pos;
     }
 }
 
@@ -73,7 +73,6 @@ async function readNote(id){
     id = new ObjectId(id)
     const res = await client.db("FourQuadrant").collection("Notes").findOne({_id: id})
     if (res) {
-        console.log(res)
         return res
     }
     else {
@@ -96,10 +95,14 @@ async function removeNote(note){
     return
 }
 
-/* Changes the Note's text to <text>*/
 async function updateNote(note){
     note._id = new ObjectId(note._id)
     const res = await client.db("FourQuadrant").collection("Notes").updateOne({_id: note._id}, {$set: note});
+}
+
+async function updateNotePos(note_id, pos){
+    note_id = new ObjectId(note_id)
+    const res = await client.db("FourQuadrant").collection("Notes").updateOne({_id: note_id}, {$set: {pos}}, {returnNewDocument:true})
 }
 
 module.exports = {
@@ -113,4 +116,5 @@ module.exports = {
     removeBoard,
     removeNote,
     updateNote,
+    updateNotePos,
 }
