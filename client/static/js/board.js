@@ -95,7 +95,8 @@ document.addEventListener('DOMContentLoaded', () => {
     sticky.appendChild(editp)
     sticky.querySelector('.editsticky').removeEventListener('click', editSticky, false)
     sticky.querySelector('.editsticky').addEventListener('click', blurInputs)
-    sticky.querySelector('.editsticky').innerText = 'Update'
+    // sticky.querySelector('.editsticky').innerText = 'Update'
+    sticky.querySelector('.editsticky').src = "/icons/check.png"
   }
 
   const blurInputs = async (e) => {
@@ -126,7 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
       sticky.appendChild(p)
       sticky.querySelector('.editsticky').removeEventListener('click', blurInputs, false)
       sticky.querySelector('.editsticky').addEventListener('click', editSticky)
-      sticky.querySelector('.editsticky').innerText = 'Edit'
+      // sticky.querySelector('.editsticky').innerText = 'Edit'
+      sticky.querySelector('.editsticky').src = "/icons/edit.png"
     }
   }
 
@@ -157,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .replace(
       /\r\n|\r|\n/g,
       '<br />'
-    )}</p><button class="editsticky">Edit</button><span class="deletesticky">&times;</span>`;
+    )}</p><input type="image" src="/icons/edit.png" class="editsticky"></input><span class="deletesticky">&times;</span>`;
     newSticky.classList.add('drag', 'sticky');
     newSticky.innerHTML = html;
     // newSticky.style.backgroundColor = randomColor();
@@ -177,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .replace(
       /\r\n|\r|\n/g,
       '<br />'
-    )}</p><button class="editsticky">Edit</button><span class="deletesticky">&times;</span>`;
+    )}</p><input type="image" src="/icons/edit.png" class="editsticky"></input><span class="deletesticky">&times;</span>`;
     newSticky.classList.add('drag', 'sticky');
     newSticky.innerHTML = html;
     // newSticky.style.backgroundColor = randomColor();
@@ -257,25 +259,26 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('e', e)
     // window.location.href = "/undefined"
   })
+
+
+  function openPopup() {
+    const link = window.location.href;
+    Swal.fire({
+      title: 'Share this board!',
+      text: 'Click the button to copy the link & share it with others!',
+      html: 
+      '<input type="text" value="' + link +
+      '" readonly size="60">',
+      showCancelButton: true,
+      confirmButtonText: 'Copy Link',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      navigator.clipboard.writeText(link);
+      Swal.fire('Copied!', '', 'success')
+    }
+  })
+  }
+  document.querySelector(".share-btn").addEventListener('click', openPopup);
 });
 
-function openPopup() {
-  const link = window.location.href;
-  Swal.fire({
-    title: 'Share this board!',
-    text: 'Click the button to copy the link & share it with others!',
-    html: 
-    '<input type="text" value="' + link +
-    '" readonly size="60">',
-    showCancelButton: true,
-    confirmButtonText: 'Copy Link',
-}).then((result) => {
-  if (result.isConfirmed) {
-    navigator.clipboard.writeText(link);
-    Swal.fire('Copied!', '', 'success')
-  }
-})
-}
 
-
-document.querySelector(".share-btn").addEventListener('click', openPopup);
