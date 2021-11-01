@@ -1,4 +1,6 @@
 body {
+  font-family: "Space Mono", monospace;
+  background: #bdd5ea;
   display: grid;
   width: 100vw;
   height: 100vh;
@@ -17,7 +19,11 @@ body > div {
 
 .h-titles {
   grid-area: a;
-  background: blue;
+  background: #bdd5ea;
+  color: #577399;
+  font-size: larger;
+  text-decoration: underline solid 5px#f7f7ff;
+  /* background: blue; */
   display: grid;
   grid-template-areas: "left right";
 }
@@ -34,7 +40,11 @@ body > div {
 
 .v-titles {
   grid-area: b;
-  background: red;
+  background: #bdd5ea;
+  color: #577399;
+  font-size: larger;
+  text-decoration: underline solid 5px#f7f7ff;
+  /* background: red; */
   width: 100%;
   height: 100%;
   grid-template-areas:
@@ -42,8 +52,16 @@ body > div {
     "bot";
 }
 
+h1 {
+  font-family: "IBM Plex Sans", monospace;
+}
+.v-titles h1 {
+  background: #bdd5ea;
+}
+
 .vt1 {
   grid-area: bot;
+  /* text-decoration: underline rgb(226, 242, 254); */
 }
 
 .vt2 {
@@ -52,7 +70,7 @@ body > div {
 
 .q-container {
   grid-area: c;
-  background: green;
+  background: #f7f7ff;
   width: 100%;
   height: 100%;
   grid-template-areas:
@@ -62,14 +80,18 @@ body > div {
 
 .q1 {
   grid-area: q1;
+  border-right: 2px dashed#bdd5ea;
+  border-bottom: 2px dashed #bdd5ea;
 }
 
 .q2 {
   grid-area: q2;
+  border-bottom: 2px dashed #bdd5ea;
 }
 
 .q3 {
   grid-area: q3;
+  border-right: 2px dashed #bdd5ea;
 }
 
 .q4 {
@@ -78,7 +100,7 @@ body > div {
 
 .q-sidebar {
   grid-area: s;
-  background: purple;
+  background: #577399;
   width: 100%;
   height: 100%;
 }
@@ -154,10 +176,10 @@ body > div {
 .sticky-form textarea {
   background-color: #f0f9ff44;
   background-clip: padding-box;
-  border: 2px dashed #0065b3;
+  border: 2px dashed #577399;
   border-radius: 0.25rem;
   color: #00243f;
-  font-family: "Courier New", Courier, monospace;
+  font-family: "Space", monospace;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
@@ -167,17 +189,17 @@ body > div {
 }
 .sticky-form input:focus,
 .sticky-form textarea:focus {
-  border: 2px dashed #ffffff;
+  border: 2px dashed #f7f7ff;
   outline: none;
 }
 button.button {
   -moz-user-select: none;
   -ms-user-select: none;
   -webkit-user-select: none;
-  background-color: #d4fc78;
+  background-color: #fee485;
   border-radius: 0.25rem;
   border: 1px solid transparent;
-  color: #0065b3;
+  color: #577399;
   display: inline-block;
   font-family: "Courier New", Courier, monospace;
   font-size: 1rem;
@@ -187,4 +209,5 @@ button.button {
   text-align: center;
   user-select: none;
   vertical-align: middle;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 }
