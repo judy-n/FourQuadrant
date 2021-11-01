@@ -2,6 +2,7 @@
 const socket = io()
 socket.emit('connected to', window.location.href.split('/')[3])
 
+
 'use strict';
 document.addEventListener('DOMContentLoaded', () => {
   const stickyArea = document.querySelector(
@@ -111,3 +112,23 @@ document.addEventListener('DOMContentLoaded', () => {
   applyDeleteListener();
 });
 
+function openPopup() {
+  link = window.location.href;
+  Swal.fire({
+    title: 'Share this board!',
+    text: 'Click the button to copy the link & share it with others!',
+    html: 
+    '<input type="text" value="' + link +
+    '" readonly size="60">',
+    showCancelButton: true,
+    confirmButtonText: 'Copy Link',
+}).then((result) => {
+  if (result.isConfirmed) {
+    navigator.clipboard.writeText(link);
+    Swal.fire('Copied!', '', 'success')
+  }
+})
+}
+
+
+document.querySelector(".share-btn").addEventListener('click', openPopup);
