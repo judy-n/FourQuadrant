@@ -151,15 +151,16 @@ h1 {
   color: black;
   pointer-events: none;
 }
-.sticky h3 {
+.sticky h3, .sticky .input-h3 {
   border-bottom: dashed 2px #e0be15;
   margin: 0 0 1rem;
   min-height: 1.3rem;
-  padding: 0 1.5rem 0.25rem 0;
+  /* padding: 0 1.5rem 0.25rem 0; */
 }
-.sticky p {
+.sticky p, .sticky .input-p {
   margin: 0;
   min-height: 9rem;
+  resize: none;
 }
 .sticky .deletesticky {
   color: #e0be15;
@@ -167,7 +168,15 @@ h1 {
   font-size: 2rem;
   position: absolute;
   right: 0.8rem;
-  top: 0.4rem;
+  top: 0.2rem;
+}
+
+.sticky .editsticky {
+  color: #e0be15;
+  cursor: pointer;
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.4rem;
 }
 
 .sticky-form {

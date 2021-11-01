@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const title = stickyTitleInput.value
     const text = stickyTextInput.value
     const note = { title, text, tempQuadrant }
+    console.log('n', board_id, note)
     createNote(board_id, note).then(newNote => {
       socket.emit('note created', {note: newNote, board_id})
       createSticky(newNote._id)
@@ -76,6 +77,44 @@ document.addEventListener('DOMContentLoaded', () => {
     sendDeleteNote(id)
   };
 
+  const editSticky = e => {
+    const sticky = e.target.parentElement
+    const edith3 = document.createElement('input')
+    edith3.classList = sticky.querySelector('h3').classList
+    edith3.classList.add('input-h3')
+    edith3.value = sticky.querySelector('h3').innerText
+    const editp = document.createElement('textarea')
+    editp.classList = sticky.querySelector('p').classList
+    editp.classList.add('input-p')
+    editp.value = sticky.querySelector('p').innerText
+    sticky.querySelector('h3').remove()
+    sticky.querySelector('p').remove()
+    sticky.appendChild(edith3)
+    sticky.appendChild(editp)
+    sticky.querySelector('.editsticky').removeEventListener('click', editSticky, false)
+    sticky.querySelector('.editsticky').addEventListener('click', blurInputs)
+    sticky.querySelector('.editsticky').innerText = 'Update'
+  }
+
+  const blurInputs = e => {
+    const sticky = e.target.parentElement
+    const h3 = document.createElement('h3')
+    h3.classList = sticky.querySelector('.input-h3').classList
+    h3.classList.remove('input-h3')
+    h3.innerText = sticky.querySelector('.input-h3').value
+    const p = document.createElement('p')
+    p.classList = sticky.querySelector('.input-p').classList
+    p.classList.remove('input-p')
+    p.innerText = sticky.querySelector('.input-p').value
+    sticky.querySelector('.input-h3').remove()
+    sticky.querySelector('.input-p').remove()
+    sticky.appendChild(h3)
+    sticky.appendChild(p)
+    sticky.querySelector('.editsticky').removeEventListener('click', blurInputs, false)
+    sticky.querySelector('.editsticky').addEventListener('click', editSticky)
+    sticky.querySelector('.editsticky').innerText = 'Edit'
+  }
+
   let isDragging = false;
   let dragTarget;
 
@@ -94,6 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function createSticky(note_id) {
     const newSticky = document.createElement('div');
     newSticky.setAttribute('id', note_id)
+    newSticky.addEventListener('dblclick', e => console.log(e))
     const html = `<h3>${stickyTitleInput.value.replace(
       /<\/?[^>]+(>|$)/g,
       ''
@@ -102,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .replace(
       /\r\n|\r|\n/g,
       '<br />'
-    )}</p><span class="deletesticky">&times;</span>`;
+    )}</p><button class="editsticky">Edit</button><span class="deletesticky">&times;</span>`;
     newSticky.classList.add('drag', 'sticky');
     newSticky.innerHTML = html;
     // newSticky.style.backgroundColor = randomColor();
@@ -122,7 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .replace(
       /\r\n|\r|\n/g,
       '<br />'
-    )}</p><span class="deletesticky">&times;</span>`;
+    )}</p><button class="editsticky">Edit</button><span class="deletesticky">&times;</span>`;
     newSticky.classList.add('drag', 'sticky');
     newSticky.innerHTML = html;
     // newSticky.style.backgroundColor = randomColor();
@@ -148,8 +188,6 @@ document.addEventListener('DOMContentLoaded', () => {
       'px';
   }
 
-  function editSticky() {}
-
   function stripHtml(text) {
     return text.replace(/<\/?[^>]+(>|$)/g, '');
   }
@@ -169,18 +207,21 @@ document.addEventListener('DOMContentLoaded', () => {
       dsb.removeEventListener('click', deleteSticky, false);
       dsb.addEventListener('click', deleteSticky);
     });
+    let editStickyButtons = document.querySelectorAll('.editsticky')
+    editStickyButtons.forEach(esb => {
+      esb.removeEventListener('click', editSticky, false)
+      esb.addEventListener('click', editSticky)
+    })
   }
-
   window.addEventListener('mousedown', e => {
-    if (!e.target.classList.contains('drag')) {
-      return;
+    if (e.target.classList.contains('drag')) {
+      dragTarget = e.target;
+      dragTarget.parentNode.append(dragTarget);
+      lastOffsetX = e.offsetX;
+      lastOffsetY = e.offsetY;
+      // console.log(lastOffsetX, lastOffsetY);
+      isDragging = true;
     }
-    dragTarget = e.target;
-    dragTarget.parentNode.append(dragTarget);
-    lastOffsetX = e.offsetX;
-    lastOffsetY = e.offsetY;
-    // console.log(lastOffsetX, lastOffsetY);
-    isDragging = true;
   });
   window.addEventListener('mousemove', drag);
   window.addEventListener('mouseup', () => (isDragging = false));
