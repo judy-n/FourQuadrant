@@ -228,16 +228,15 @@ h1 {
   border: 2px dashed #f7f7ff;
   outline: none;
 }
-button.button {
+
+.sbtn.click-btn.yellow-btn {
   -moz-user-select: none;
   -ms-user-select: none;
   -webkit-user-select: none;
-  background-color: #f4e285;
-  border-radius: 0.25rem;
-  border: 1px solid transparent;
   color: #577399;
   display: inline-block;
   font-family: "Courier New", Courier, monospace;
+  background-color: #f4e285;
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5;
@@ -245,5 +244,13 @@ button.button {
   text-align: center;
   user-select: none;
   vertical-align: middle;
-  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  box-shadow: 0 5px 0 #b8ac6d;
+}
+
+.sbtn.click-btn.yellow-btn:focus {
+  box-shadow: 0 5px 0 #b8ac6d;
+}
+
+.sbtn.click-btn.yellow-btn:active {
+  box-shadow: 0 2.5px 0 #b8ac6d;
 }
