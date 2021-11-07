@@ -37,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = stickyTextInput.value;
     const pos = { left: Math.random(), top: Math.random() };
     const note = { title, text, pos };
-    console.log("n", board_id, note);
     createNote(board_id, note)
       .then((newNote) => {
         socket.emit("note created", { note: newNote, board_id });
@@ -50,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateNote(note)
       .then((resNote) => {
         socket.emit("note update", { note: resNote, board_id });
-        console.log("up conf", resNote);
       })
       .catch((e) => console.log("an error occurred"));
   };
@@ -64,6 +62,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const socketMoveNote = (note_id, pos) => {
     // send update to other users but not database
     socket.emit("note move", { note_id, pos, board_id });
+  };
+  const sendResizeNote = (note_id, size) => {
+    updateNoteSize(note_id, size)
+      .then((_resSize) => {
+        socket.emit("note resize", { note_id, size, board_id });
+      })
+      .catch((e) => console.error("an unknown error occurred"));
+  };
+  const socketResizeNote = (note_id, size) => {
+    // send update to other users but not database
+    socket.emit("note resize", { note_id, size, board_id });
   };
   const sendDeleteNote = (note_id) => {
     deleteNote(note_id).then((note) => {
@@ -79,6 +88,20 @@ document.addEventListener("DOMContentLoaded", () => {
           width: `${event.rect.width}px`,
           height: `${event.rect.height}px`,
         });
+
+        const id = event.target.getAttribute("id");
+        const size = { width: event.rect.width, height: event.rect.height };
+        socketResizeNote(id, size);
+      },
+      end: function (event) {
+        Object.assign(event.target.style, {
+          width: `${event.rect.width}px`,
+          height: `${event.rect.height}px`,
+        });
+
+        const id = event.target.getAttribute("id");
+        const size = { width: event.rect.width, height: event.rect.height };
+        sendResizeNote(id, size);
       },
     },
   });
@@ -130,6 +153,13 @@ document.addEventListener("DOMContentLoaded", () => {
       noteEl.style.top = `${top}px`;
     }
   };
+  const receiveResizeNote = ({ note_id, size, io_board_id }) => {
+    if (io_board_id === board_id) {
+      const noteEl = document.querySelector(`.sticky[id="${note_id}"]`);
+      noteEl.style.width = `${size.width}px`;
+      noteEl.style.height = `${size.height}px`;
+    }
+  };
   const receiveDeleteNote = ({ note_id, io_board_id }) => {
     if (io_board_id === board_id) {
       const el = document.querySelector(`.sticky[id="${note_id}"]`);
@@ -146,8 +176,11 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   socket.on("receive move", ({ note_id, pos, io_board_id }) => {
-    console.log("receiving move");
     receiveMoveNote({ note_id, pos, io_board_id });
+  });
+
+  socket.on("receive resize", ({ note_id, size, io_board_id }) => {
+    receiveResizeNote({ note_id, size, io_board_id });
   });
 
   socket.on("receive delete", ({ note_id, io_board_id }) => {
@@ -237,7 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
     applyDeleteListener();
     clearStickyForm();
   }
-  function loadSticky(note_id, title, text, pos) {
+  function loadSticky(note_id, title, text, pos, size = null) {
     const newSticky = document.createElement("div");
     newSticky.setAttribute("id", note_id);
     const html = `<h3>${title.replace(/<\/?[^>]+(>|$)/g, "")}</h3><p>${text
@@ -248,6 +281,10 @@ document.addEventListener("DOMContentLoaded", () => {
       )}</p><input type="image" src="/icons/edit.png" class="editsticky"></input><span class="deletesticky">&times;</span>`;
     newSticky.classList.add("drag", "sticky");
     newSticky.innerHTML = html;
+    if (size) {
+      newSticky.style.width = `${size.width}px`;
+      newSticky.style.height = `${size.height}px`;
+    }
     // newSticky.style.backgroundColor = randomColor();
     stickyArea.append(newSticky);
     positionSticky(newSticky, pos);
@@ -296,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .then((board) => {
       if (board) {
         board.notes.forEach((note) => {
-          loadSticky(note._id, note.title, note.text, note.pos);
+          loadSticky(note._id, note.title, note.text, note.pos, note.size);
         });
       } else {
         // window.location.href = "/undefined"
