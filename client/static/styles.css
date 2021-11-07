@@ -145,6 +145,10 @@ h1 {
   padding: 1rem;
   position: absolute;
   width: 12.5rem;
+  height: 12.5rem;
+  min-width: min-content !important;
+  min-height: min-content !important;
+  display: table;
 }
 .sticky h3,
 .sticky p {
@@ -160,6 +164,8 @@ h1 {
   background-color: #f4e285;
   border-color: #e0be15;
   /* padding: 0 1.5rem 0.25rem 0; */
+  min-height: min-content !important;
+  min-width: min-content !important;
 }
 
 .sticky .input-h3:focus {
@@ -169,11 +175,11 @@ h1 {
 .sticky p,
 .sticky .input-p {
   margin: 0;
-  min-height: 9rem;
-  resize: none;
   outline: none;
   background-color: #f4e285;
   border-color: #e0be15;
+  min-height: min-content !important;
+  min-width: min-content !important;
 }
 
 .sticky .input-p:focus {
