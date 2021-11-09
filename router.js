@@ -151,4 +151,27 @@ router.patch('/note/:note_id/position', idChecker, async (req, res, next) => {
   }
 })
 
+roulter.patch('/board/:board_id/log', idChecker, async (req, res, next) => {
+  const { message } = req.body
+  try {
+    await mongo.logMessage(req.params.board_id, message)
+    res.send({message})
+  } catch (e) {
+    handleError(e, res)
+    console.log('error', e)
+    next()
+  }
+})
+
+router.delete('/board/:board_id/log', idChecker, async (req, res, next) => {
+  try {
+    await mongo.clearLog(req.params.board_id)
+    res.send({ message: 'success' })
+  } catch (e) {
+    handleError(e, res)
+    console.log('error', e)
+    next()
+  }
+})
+
 module.exports = router

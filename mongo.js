@@ -15,6 +15,7 @@ class Board {
     constructor() {
         this._id = new ObjectId()
         this.notes = []
+        this.log = []
     }
 }
 
@@ -105,6 +106,16 @@ async function updateNotePos(note_id, pos){
     const res = await client.db("FourQuadrant").collection("Notes").updateOne({_id: note_id}, {$set: {pos}}, {returnNewDocument:true})
 }
 
+async function logMessage(board_id, message){
+    board_id = new ObjectId(board_id)
+    const res = await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {$push: {log: message}})
+}
+
+async function clearLog(board_id){
+    board_id = new ObjectId(board_id)
+    const res = await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {log: []})
+}
+
 module.exports = {
     Board,
     Note,
@@ -117,4 +128,6 @@ module.exports = {
     removeNote,
     updateNote,
     updateNotePos,
+    logMessage,
+    clearLog,
 }

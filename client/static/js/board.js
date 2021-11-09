@@ -3,6 +3,7 @@
 const socket = io()
 const board_id = window.location.href.split('/')[3]
 const defaultPos = {left: 0, top: 0}
+let displayName = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   const stickyArea = document.querySelector(
@@ -63,6 +64,34 @@ document.addEventListener('DOMContentLoaded', () => {
       socket.emit('note delete', {note_id, board_id})
     })
   }
+
+  //================ Log Functions =====================//
+  const sendMessage = (message) => {
+    // add message to db log then..
+    // update this log
+    // emit socket event
+  }
+
+  const receiveMessage = (message) => {
+    // update this log
+  }
+
+  const clearLog = () => {
+    // clear db log then..
+    // update this log
+    // emit socket event
+  }
+
+  const appendThisLog = (message) => {
+    // append message to this log
+  }
+  //===================================================//
+
+  const receiveName = ({name}) => {
+    displayName = name
+    // update name in DOM
+    console.log('got', name)
+  }
   
   const receiveCreatedNote = ({note, io_board_id}) => {
     if (io_board_id === board_id) {
@@ -91,6 +120,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  socket.on('receive name', ({name}) => {
+    receiveName({name})
+  })
+
   socket.on('receive note', ({note, io_board_id}) => {
     receiveCreatedNote({note, io_board_id})
   })
@@ -105,6 +138,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   socket.on('receive delete', ({note_id, io_board_id}) => {
     receiveDeleteNote({note_id, io_board_id})
+  })
+
+  socket.on('receive message', ({io_board_id, message}) => {
+    if (io_board_id === board_id) {
+      receiveMessage(message)
+    }
   })
 
   const deleteSticky = e => {
@@ -289,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
   createStickyButton.addEventListener('click', sendCreateNote);
   applyDeleteListener();
 
-  // load notes
+  // load notes && log
   getBoard(board_id).then(board => {
     if (board) {
       board.notes.forEach(note => {
