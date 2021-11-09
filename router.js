@@ -173,7 +173,7 @@ router.patch("/note/:note_id/size", idChecker, async (req, res, next) => {
   }
 });
 
-roulter.patch('/board/:board_id/log', idChecker, async (req, res, next) => {
+router.patch('/board/:board_id/log', idChecker, async (req, res, next) => {
   const { message } = req.body
   try {
     await mongo.logMessage(req.params.board_id, message)
