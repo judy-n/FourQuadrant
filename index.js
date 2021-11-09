@@ -7,6 +7,8 @@ const { Server } = require('socket.io')
 const io = new Server(server)
 const port = process.env.PORT || 3000
 const router = require('./router')
+const Sentencer = require('sentencer')
+const session = require('express-session')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -35,6 +37,8 @@ app.get('/:boardID', function(req, res){
  * currently probly wont scale great - 
  */
 io.on('connection', socket => {
+  socket.emit('receive name', { name: Sentencer.make("{{ adjective }}-{{ noun }}") })
+
   socket.on('note created', ({note, board_id}) => {
     socket.broadcast.emit('receive note', {note, io_board_id: board_id})
   })
@@ -49,6 +53,10 @@ io.on('connection', socket => {
 
   socket.on('note delete', ({note_id, board_id}) => {
     socket.broadcast.emit('receive delete', {note_id, io_board_id: board_id})
+  })
+
+  socket.on('log message', ({board_id, message}) => {
+    socket.boardcast.emit('receive message', {io_board_id: board_id, message})
   })
 })
 
