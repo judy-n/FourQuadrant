@@ -386,6 +386,26 @@ document.addEventListener("DOMContentLoaded", () => {
       // window.location.href = "/undefined"
     });
 
+    function newStickyLog(username, title){
+      const newLog = document.createElement('p')
+      newLog.classList.add("log-entry")
+      newLog.innerHTML = `> <span class="log-keyword">` + username + `</span> made a new sticky with title ` 
+      + `<span class="log-keyword">` + title + `</span>`
+      const logArea = document.querySelector(".log-console")
+      logArea.appendChild(newLog)    
+    }
+
+    function deleteStickyLog(username, title){
+      const newLog = document.createElement('p')
+      newLog.classList.add("log-entry")
+      newLog.innerHTML = `> <span class="log-keyword">` + username + `</span> removed the sticky with title ` 
+      + `<span class="log-keyword">` + title + `</span>`
+      const logArea = document.querySelector(".log-console")
+      logArea.appendChild(newLog)    
+    }
+  
+
+
   function openPopup() {
     const link = window.location.href;
     Swal.fire({
