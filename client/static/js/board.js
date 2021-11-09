@@ -204,9 +204,6 @@ document.addEventListener("DOMContentLoaded", () => {
     receiveName({name})
   })
 
-  socket.on('receive note', ({note, io_board_id}) => {
-    receiveCreatedNote({note, io_board_id})
-  })
   socket.on("receive update", ({ note, io_board_id }) => {
     receiveUpdatedNote({ note, io_board_id });
   });
