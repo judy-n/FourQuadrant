@@ -39,10 +39,6 @@ app.get('/:boardID', function(req, res){
  */
 io.on('connection', socket => {
   socket.emit('receive name', { name: Sentencer.make("{{ adjective }}-{{ noun }}") })
-
-  socket.on('note created', ({note, board_id}) => {
-    socket.broadcast.emit('receive note', {note, io_board_id: board_id})
-  })
   
   socket.on("note created", ({ note, board_id }) => {
     socket.broadcast.emit("receive note", { note, io_board_id: board_id });
@@ -73,10 +69,6 @@ io.on('connection', socket => {
       size,
       io_board_id: board_id,
     });
-  });
-
-  socket.on("note delete", ({ note_id, board_id }) => {
-    socket.broadcast.emit("receive delete", { note_id, io_board_id: board_id });
   });
 });
 
