@@ -1,8 +1,8 @@
 // where the frontend communicates with the backend
 const instance = axios.create({
-    baseURL: '/api',
-    timeout: 1000,
-    headers: {'X-Custom-Header': 'foobar'}
+  baseURL: "/api",
+  timeout: 1000,
+  headers: { "X-Custom-Header": "foobar" },
 });
 
 const createBoard = () => {
@@ -52,6 +52,13 @@ const updateNotePos = (note_id, pos) => {
         .then(res => res.data.pos)
         .catch(console.error)
 }
+
+const updateNoteSize = (note_id, size) => {
+  return instance
+    .patch(`/note/${note_id}/size`, { size })
+    .then((res) => res.data.size)
+    .catch((err) => console.error);
+};
 
 const logMessage = (board_id, message) => {
     return instance.patch(`/board/${board_id}/log`, {message})
