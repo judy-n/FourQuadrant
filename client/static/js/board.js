@@ -389,7 +389,8 @@ document.addEventListener("DOMContentLoaded", () => {
       newLog.innerHTML = `> <span class="log-keyword">` + username + `</span> made a new sticky with title ` 
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
-      logArea.appendChild(newLog)    
+      logArea.appendChild(newLog)  
+      logArea.scrollTop = logArea.scrollHeight
     }
 
     function deleteStickyLog(username, title){
@@ -398,10 +399,9 @@ document.addEventListener("DOMContentLoaded", () => {
       newLog.innerHTML = `> <span class="log-keyword">` + username + `</span> removed the sticky with title ` 
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
-      logArea.appendChild(newLog)    
+      logArea.appendChild(newLog) 
+      logArea.scrollTop = logArea.scrollHeight   
     }
-  
-
 
   function openPopup() {
     const link = window.location.href;
