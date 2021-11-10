@@ -15,15 +15,23 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, '/client/static')))
 app.use('/api', router);
 
-app.get('/', function(req, res) {
+function requireHTTPS(req, res, next) {
+  // The 'x-forwarded-proto' check is for Heroku
+  if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
+    return res.redirect('https://' + req.get('host') + req.url);
+  }
+  next();
+}
+
+app.get('/', requireHTTPS, function(req, res) {
   res.sendFile(path.join(__dirname, '/client/index.html'));
 })
 
-app.get('/undefined', function(req, res) {
+app.get('/undefined', requireHTTPS, function(req, res) {
   res.send('Error loading board :(')
 })
 
-app.get('/:boardID', function(req, res){
+app.get('/:boardID', requireHTTPS, function(req, res){
   res.sendFile(path.join(__dirname, '/client/board.html'))
 })
 
