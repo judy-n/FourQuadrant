@@ -84,6 +84,7 @@ async function populateNotes(board) {
 
 async function readNote(id) {
   id = new ObjectId(id);
+  console.log('trying to find node id', id)
   const res = await client
     .db("FourQuadrant")
     .collection("Notes")

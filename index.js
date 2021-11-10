@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000
 const router = require('./router')
 const Sentencer = require('sentencer')
 const session = require('express-session')
+const { readNote } = require('./mongo')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -46,14 +47,18 @@ app.get('/:boardID', requireHTTPS, function(req, res){
  * currently probly wont scale great -
  */
 io.on('connection', socket => {
-  socket.emit('receive name', { name: Sentencer.make("{{ adjective }}-{{ noun }}") })
+  socket.emit('receive name', { name: Sentencer.make("{{ adjective }} {{ noun }}") })
   
-  socket.on("note created", ({ note, board_id }) => {
-    socket.broadcast.emit("receive note", { note, io_board_id: board_id });
+  socket.on("note created", ({ note, board_id, username }) => {
+    socket.broadcast.emit("receive note", { note, io_board_id: board_id, username });
+    const title = (note && note.title) || '[no title]'
+    io.emit('receive create log', {io_board_id: board_id, username, title})
   });
 
-  socket.on("note update", ({ note, board_id }) => {
+  socket.on("note update", ({ note, board_id, username }) => {
     socket.broadcast.emit("receive update", { note, io_board_id: board_id });
+    const title = (note && note.title) || '[no title]'
+    io.emit('receive update log', { io_board_id: board_id, username, title})
   });
 
   socket.on("note move", ({ note_id, pos, board_id }) => {
@@ -64,12 +69,13 @@ io.on('connection', socket => {
     });
   });
 
-  socket.on('note delete', ({note_id, board_id}) => {
-    socket.broadcast.emit('receive delete', {note_id, io_board_id: board_id})
+  socket.on('note delete', async ({note_id, board_id, username, title}) => {
+    socket.broadcast.emit('receive delete', {note_id, io_board_id: board_id, username})
+    io.emit('receive delete log', {io_board_id: board_id, username, title: title || '[no title]'})
   })
 
   socket.on('log message', ({board_id, message}) => {
-    socket.boardcast.emit('receive message', {io_board_id: board_id, message})
+    io.emit('receive message', {io_board_id: board_id, message})
   })
   socket.on("note resize", ({ note_id, size, board_id }) => {
     socket.broadcast.emit("receive resize", {

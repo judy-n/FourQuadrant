@@ -3,7 +3,7 @@
 const socket = io()
 const board_id = window.location.href.split('/')[3]
 const defaultPos = {left: 0, top: 0}
-let displayName = null;
+let username = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   const stickyArea = document.querySelector("#stickies-container");
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const note = { title, text, pos };
     createNote(board_id, note)
       .then((newNote) => {
-        socket.emit("note created", { note: newNote, board_id });
+        socket.emit("note created", { note: newNote, board_id, username });
         createSticky(newNote._id, pos);
       })
       .catch((e) => console.log("an unknown error occurred"));
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const note = { _id, title, text, tempQuadrant: defaultPos };
     updateNote(note)
       .then((resNote) => {
-        socket.emit("note update", { note: resNote, board_id });
+        socket.emit("note update", { note: resNote, board_id, username });
       })
       .catch((e) => console.log("an error occurred"));
   };
@@ -75,9 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // send update to other users but not database
     socket.emit("note resize", { note_id, size, board_id });
   };
-  const sendDeleteNote = (note_id) => {
+  const sendDeleteNote = (note_id, title) => {
     deleteNote(note_id).then(note => {
-      socket.emit('note delete', {note_id, board_id})
+      socket.emit('note delete', {note_id, board_id, username, title: note.title})
     })
   }
 
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //===================================================//
 
   const receiveName = ({name}) => {
-    displayName = name
+    username = name
     // update name in DOM
     console.log('got', name)
   }
@@ -220,16 +220,29 @@ document.addEventListener("DOMContentLoaded", () => {
     receiveDeleteNote({ note_id, io_board_id });
   });
 
-  socket.on('receive message', ({io_board_id, message}) => {
+  socket.on('receive create log', ({io_board_id, username, title}) => {
     if (io_board_id === board_id) {
-      receiveMessage(message)
+      newStickyLog(username, title)
+    }
+  })
+
+  socket.on('receive update log', ({io_board_id, username, title}) => {
+    if (io_board_id === board_id) {
+      updateStickyLog(username, title)
+    }
+  })
+
+  socket.on('receive delete log', ({io_board_id, username, title}) => {
+    if (io_board_id === board_id) {
+      deleteStickyLog(username, title)
     }
   })
 
   const deleteSticky = e => {
     const id = e.target.parentElement.getAttribute('id')
+    const title = getNote(id).title || '[no title]'
     e.target.parentNode.remove();
-    sendDeleteNote(id);
+    sendDeleteNote(id, title);
   };
 
   const editSticky = (e) => {
@@ -374,6 +387,8 @@ document.addEventListener("DOMContentLoaded", () => {
         board.notes.forEach((note) => {
           loadSticky(note._id, note.title, note.text, note.pos, note.size);
         });
+        console.log('log', board.log)
+        loadLogs(board.log)
       } else {
         // window.location.href = "/undefined"
       }
@@ -383,6 +398,21 @@ document.addEventListener("DOMContentLoaded", () => {
       // window.location.href = "/undefined"
     });
 
+    function loadLogs(logs) {
+      logs.forEach(log => {
+        if(log.includes('made a new')) {
+          const [username, title] = log.split(' made a new sticky with title ')
+          newStickyLog(username, title)
+        } else if (log.includes('updated')) {
+          const [username, title] = log.split(' updated sticky titled ')
+          updateStickyLog(username, title)
+        } else if (log.includes('removed')) {
+          const [username, title] = log.split(' removed the sticky with title ')
+          deleteStickyLog(username, title)
+        }
+      })
+    }
+
     function newStickyLog(username, title){
       const newLog = document.createElement('p')
       newLog.classList.add("log-entry")
@@ -391,6 +421,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const logArea = document.querySelector(".log-console")
       logArea.appendChild(newLog)  
       logArea.scrollTop = logArea.scrollHeight
+      logMessage(board_id, `${username} made a new sticky with title ${title}`)
+    }
+
+    function updateStickyLog(username, title){
+      const newLog = document.createElement('p')
+      newLog.classList.add("log-entry")
+      newLog.innerHTML = `> <span class="log-keyword">` + username + `</span> updated sticky titled ` 
+      + `<span class="log-keyword">` + title + `</span>`
+      const logArea = document.querySelector(".log-console")
+      logArea.appendChild(newLog)  
+      logArea.scrollTop = logArea.scrollHeight
+      logMessage(board_id, `${username} updated sticky titled ${title}`)
     }
 
     function deleteStickyLog(username, title){
@@ -400,7 +442,8 @@ document.addEventListener("DOMContentLoaded", () => {
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
       logArea.appendChild(newLog) 
-      logArea.scrollTop = logArea.scrollHeight   
+      logArea.scrollTop = logArea.scrollHeight
+      logMessage(board_id, `${username} removed the sticky with title ${title}`)
     }
 
   function openPopup() {
