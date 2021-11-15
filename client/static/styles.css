@@ -118,7 +118,7 @@ h1 {
 }
 
 .log-console {
-  width: 18rem;
+  width: 19rem;
   background-color: #bdd5ea;
   margin-top: 0rem;
   align-self: center;
@@ -162,6 +162,7 @@ h1 {
 
 .name-title {
   color: white;
+  margin-bottom: 0em;
 }
 
 .rotate {
