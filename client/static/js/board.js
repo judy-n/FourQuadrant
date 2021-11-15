@@ -7,7 +7,6 @@ let username = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   const stickyArea = document.querySelector("#stickies-container");
-
   const createStickyButton = document.querySelector("#createsticky");
 
   const stickyTitleInput = document.querySelector("#stickytitle");
@@ -103,12 +102,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   //===================================================//
 
-  const receiveName = ({name}) => {
-    username = name
-    // update name in DOM
-    console.log('got', name)
-  }
-
   interact(".sticky").resizable({
     edges: { top: false, left: false, bottom: true, right: true },
     listeners: {
@@ -201,7 +194,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   socket.on('receive name', ({name}) => {
-    receiveName({name})
+    username=name
+    document.querySelector('.name-input').value = name
   })
 
   socket.on("receive update", ({ note, io_board_id }) => {
@@ -462,4 +456,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   document.querySelector(".share-btn").addEventListener("click", openPopup);
+  document.querySelector(".name-input").addEventListener("blur", (e) => username=e.target.value)
 });
