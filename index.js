@@ -9,7 +9,17 @@ const port = process.env.PORT || 3000
 const router = require('./router')
 const Sentencer = require('sentencer')
 const session = require('express-session')
-const { readNote } = require('./mongo')
+const { readNote, readBoard } = require('./mongo')
+const { ObjectId } = require('mongodb')
+
+const idChecker = async (req, res, next) => {
+  if (req.params.boardID && !ObjectId.isValid(req.params.boardID)) {
+    console.log("invalid board id:", req.params.board_id);
+    res.sendFile(path.join(__dirname, '/client/error.html'))
+    return;
+  }
+  next();
+};
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -32,7 +42,10 @@ app.get('/undefined', requireHTTPS, function(req, res) {
   res.send('Error loading board :(')
 })
 
-app.get('/:boardID', requireHTTPS, function(req, res){
+app.get('/:boardID', requireHTTPS, idChecker, async function(req, res){
+  if (!(await readBoard(req.params.boardID))) {
+    res.sendFile(path.join(__dirname, '/client/error.html'))
+  }
   res.sendFile(path.join(__dirname, '/client/board.html'))
 })
 

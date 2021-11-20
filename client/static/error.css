@@ -1,0 +1,35 @@
+body {
+  display: grid;
+  place-items: center;
+  background-color: #577399;
+  font-family: "Space Mono", monospace;
+}
+
+.bigcontainer {
+  margin-top: 3rem;
+}
+
+h1 {
+  font-family: "IBM Plex Sans", monospace;
+}
+
+#error {
+  padding: 1rem;
+  border-radius: 5px;
+  color: #bdd5ea;
+  font-size: 3em;
+  margin: 0;
+}
+
+.msg-container {
+  background-color: #bdd5ea;
+  padding: 2rem;
+  color: #577399;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.msg-container p span a {
+  color: #fff9af;
+  text-decoration: none;
+}
