@@ -410,7 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function newStickyLog(username, title){
       const newLog = document.createElement('p')
       newLog.classList.add("log-entry")
-      newLog.innerHTML = `> <span class="log-keyword">` + username + `</span> made a new sticky with title ` 
+      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> made a new sticky with title ` 
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
       logArea.appendChild(newLog)  
@@ -421,7 +421,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateStickyLog(username, title){
       const newLog = document.createElement('p')
       newLog.classList.add("log-entry")
-      newLog.innerHTML = `> <span class="log-keyword">` + username + `</span> updated sticky titled ` 
+      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> updated sticky titled ` 
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
       logArea.appendChild(newLog)  
@@ -432,7 +432,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function deleteStickyLog(username, title){
       const newLog = document.createElement('p')
       newLog.classList.add("log-entry")
-      newLog.innerHTML = `> <span class="log-keyword">` + username + `</span> removed the sticky with title ` 
+      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> removed the sticky with title ` 
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
       logArea.appendChild(newLog) 

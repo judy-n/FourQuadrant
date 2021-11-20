@@ -127,6 +127,7 @@ h1 {
   overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  color: #577399;
 }
 
 .log-console::-webkit-scrollbar {
@@ -315,14 +316,20 @@ h1 {
 .history {
   color: white;
   margin-left: 1rem;
-  /* margin-bottom: -0.5rem; */
 }
 
 .log-entry {
   margin: 1rem;
   font-size: 0.75rem;
+  border-top: dashed 1px #577399;
+  padding-top: 1rem;
 }
 
 .log-keyword {
   font-weight: bold;
+}
+
+.log-entry:first-child {
+  border-top: none;
+  padding-top: 0;
 }
