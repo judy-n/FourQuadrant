@@ -13,15 +13,6 @@ body {
   margin: 0;
 }
 
-.corner-thing {
-  display: grid;
-  place-items: center;
-}
-
-.corner-thing img {
-  width: 60px;
-}
-
 body > div {
   display: grid;
 }
@@ -122,7 +113,7 @@ h1 {
   background-color: #bdd5ea;
   margin-top: 0rem;
   align-self: center;
-  height: 12rem;
+  height: 10rem;
   border-radius: 0.25rem;
   overflow-y: scroll;
   scrollbar-width: none;
@@ -332,4 +323,18 @@ h1 {
 .log-entry:first-child {
   border-top: none;
   padding-top: 0;
+}
+
+.toolbar {
+  display: flex;
+  column-gap: 1rem;
+  margin-top: -1rem;
+}
+
+.toolbar img {
+  width: 40px;
+}
+
+.home-btn img {
+  margin-left: 1rem;
 }
