@@ -447,11 +447,18 @@ document.addEventListener("DOMContentLoaded", () => {
       text: "Click the button to copy the link & share it with others!",
       html: '<input type="text" value="' + link + '" readonly size="60">',
       showCancelButton: true,
-      confirmButtonText: "Copy Link",
+      confirmButtonColor: '#577399',
+      confirmButtonText: `<span style="font-family: Space Mono">Copy Link</span>`,
+      cancelButtonText: `<span style="font-family: Space Mono">Cancel</span>`,
     }).then((result) => {
       if (result.isConfirmed) {
         navigator.clipboard.writeText(link);
-        Swal.fire("Copied!", "", "success");
+        Swal.fire({
+          title: "Copied!",
+          icon: "success",
+          confirmButtonColor: '#577399',
+          confirmButtonText: `<span style="font-family: Space Mono">OK</span>`
+        });
       }
     });
   }
