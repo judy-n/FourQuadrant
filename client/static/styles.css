@@ -23,9 +23,15 @@ body > div {
   color: #577399;
   font-size: larger;
   text-decoration: underline solid 5px#f7f7ff;
-  /* background: blue; */
   display: grid;
   grid-template-areas: "left right";
+}
+
+h1 {
+  /* for Safari */
+  text-decoration-line: underline;
+  text-decoration-color: white;
+  text-decoration-thickness: 5px;
 }
 
 .ht1 {
@@ -44,7 +50,6 @@ body > div {
   color: #577399;
   font-size: larger;
   text-decoration: underline solid 5px#f7f7ff;
-  /* background: red; */
   width: 100%;
   height: 100%;
   grid-template-areas:
