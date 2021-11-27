@@ -71,3 +71,9 @@ const clearLog = (board_id) => {
         .then(res => res.data.message)
         .catch(console.error)
 }
+
+const getUsername = () => {
+    return instance.get('/username')
+        .then(res => res.data.username)
+        .catch(console.error)
+}

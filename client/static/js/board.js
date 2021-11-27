@@ -5,6 +5,8 @@ const board_id = window.location.href.split('/')[3]
 const defaultPos = {left: 0, top: 0}
 let displayName = null;
 
+getUsername().then(res => displayName = res)
+
 document.addEventListener("DOMContentLoaded", () => {
   const stickyArea = document.querySelector("#stickies-container");
 
