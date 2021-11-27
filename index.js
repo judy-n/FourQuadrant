@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000
 const router = require('./router')
 const Sentencer = require('sentencer')
 const session = require('express-session')
+const { MemoryStore } = require('express-session')
 const { readNote, readBoard } = require('./mongo')
 const { ObjectId } = require('mongodb')
 
@@ -24,7 +25,32 @@ const idChecker = async (req, res, next) => {
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.static(path.join(__dirname, '/client/static')))
+  
 app.use('/api', router);
+
+app.use(
+  session({
+    secret: "a hardcoded secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      expires: 36000000,
+      sameSite: "strict",
+      httpOnly: true,
+    },
+    store: new MemoryStore(),
+    unset: "destroy",
+  })
+);
+
+app.get('/api/username', async (req, res, next) => {
+  if (req.session && req.session.username) {
+    res.send({ username: req.session.username })
+  } else {
+    req.session.username = Sentencer.make("{{ adjective }}-{{ noun }}")
+    res.send({ username: req.session.username })
+  }
+})
 
 function requireHTTPS(req, res, next) {
   // The 'x-forwarded-proto' check is for Heroku
@@ -60,7 +86,7 @@ app.get('/:boardID', requireHTTPS, idChecker, async function(req, res){
  * currently probly wont scale great -
  */
 io.on('connection', socket => {
-  socket.emit('receive name', { name: Sentencer.make("{{ adjective }} {{ noun }}") })
+  // socket.emit('receive name', { name: Sentencer.make("{{ adjective }}-{{ noun }}") })
   
   socket.on("note created", ({ note, board_id, username }) => {
     socket.broadcast.emit("receive note", { note, io_board_id: board_id, username });
