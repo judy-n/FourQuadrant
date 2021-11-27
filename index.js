@@ -10,6 +10,17 @@ const router = require('./router')
 const Sentencer = require('sentencer')
 const session = require('express-session')
 const { MemoryStore } = require('express-session')
+const { readNote, readBoard } = require('./mongo')
+const { ObjectId } = require('mongodb')
+
+const idChecker = async (req, res, next) => {
+  if (req.params.boardID && !ObjectId.isValid(req.params.boardID)) {
+    console.log("invalid board id:", req.params.board_id);
+    res.sendFile(path.join(__dirname, '/client/error.html'))
+    return;
+  }
+  next();
+};
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
@@ -57,7 +68,10 @@ app.get('/undefined', requireHTTPS, function(req, res) {
   res.send('Error loading board :(')
 })
 
-app.get('/:boardID', requireHTTPS, function(req, res){
+app.get('/:boardID', requireHTTPS, idChecker, async function(req, res){
+  if (!(await readBoard(req.params.boardID))) {
+    res.sendFile(path.join(__dirname, '/client/error.html'))
+  }
   res.sendFile(path.join(__dirname, '/client/board.html'))
 })
 
@@ -74,12 +88,16 @@ app.get('/:boardID', requireHTTPS, function(req, res){
 io.on('connection', socket => {
   // socket.emit('receive name', { name: Sentencer.make("{{ adjective }}-{{ noun }}") })
   
-  socket.on("note created", ({ note, board_id }) => {
-    socket.broadcast.emit("receive note", { note, io_board_id: board_id });
+  socket.on("note created", ({ note, board_id, username }) => {
+    socket.broadcast.emit("receive note", { note, io_board_id: board_id, username });
+    const title = (note && note.title) || '[no title]'
+    io.emit('receive create log', {io_board_id: board_id, username, title})
   });
 
-  socket.on("note update", ({ note, board_id }) => {
+  socket.on("note update", ({ note, board_id, username }) => {
     socket.broadcast.emit("receive update", { note, io_board_id: board_id });
+    const title = (note && note.title) || '[no title]'
+    io.emit('receive update log', { io_board_id: board_id, username, title})
   });
 
   socket.on("note move", ({ note_id, pos, board_id }) => {
@@ -90,12 +108,13 @@ io.on('connection', socket => {
     });
   });
 
-  socket.on('note delete', ({note_id, board_id}) => {
-    socket.broadcast.emit('receive delete', {note_id, io_board_id: board_id})
+  socket.on('note delete', async ({note_id, board_id, username, title}) => {
+    socket.broadcast.emit('receive delete', {note_id, io_board_id: board_id, username})
+    io.emit('receive delete log', {io_board_id: board_id, username, title: title || '[no title]'})
   })
 
   socket.on('log message', ({board_id, message}) => {
-    socket.boardcast.emit('receive message', {io_board_id: board_id, message})
+    io.emit('receive message', {io_board_id: board_id, message})
   })
   socket.on("note resize", ({ note_id, size, board_id }) => {
     socket.broadcast.emit("receive resize", {

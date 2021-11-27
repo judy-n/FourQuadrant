@@ -3,6 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A helpful productivity tool based on the Eisenhower Matrix">
+    <meta name="author" content="Judy Naamani & Julien Bertazzo Lambert">
+    <meta name="keywords" content="Productivity, Sticky, Notes, Board, Organization, Eisenhower, Matrix">
+    <meta property="og:title" content="FourQuadrant">
+    <meta property="og:description" content="A helpful productivity tool based on the Eisenhower Matrix">
+    <meta property="og:image" content="/icons/4Q2.png">
+    <meta property="og:url" content="https://www.fourquadrant.tech">
+    <meta name="twitter:title" content="FourQuadrant">
+    <meta name="twitter:description" content="A helpful productivity tool based on the Eisenhower Matrix">
+    <meta name="twitter:image" content="/icons/4Q2.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="/styles.css">
     <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.min.js"></script>
@@ -19,11 +30,7 @@
     <title>Board</title>
 </head>
 <body>
-  
-    <div class="corner-thing">
-       <a href="#" class="share-btn"><img src="/icons/share.png"></a>
-    </div>
-    
+
     <div class="h-titles">
         <h1 class="ht1">IMPORTANT</h1>
         <h1 class="ht2">NOT IMPORTANT</h1>
@@ -40,7 +47,19 @@
         <div class="q4"></div>
     </div>
 
-    <div class="q-sidebar"><div id="stickies-container"></div>
+    <div class="q-sidebar">
+    
+    <div id="stickies-container"></div>
+    <div class="toolbar">
+        <a href="https://www.fourquadrant.tech/" class="home-btn"><img src="/icons/home.png"></a>
+        <a href="#" class="share-btn"><img src="/icons/share.png"></a>
+     </div>
+     
+    <div class="name-container">
+        <p class="name-title">Name:</p>
+        <input class="name-input" type="text" spellcheck="false"/>
+
+    </div>
     <div class="sticky-form">
         <label for="stickytitle">Title for your sticky:</label>
         <input type="text" name="stickytitle" id="stickytitle" />
