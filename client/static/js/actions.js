@@ -77,3 +77,9 @@ const getUsername = () => {
         .then(res => res.data.username)
         .catch(console.error)
 }
+
+const setUsername = (username) => {
+    return instance.post('/username', {username})
+        .then(res => res.data.message)
+        .catch(console.error)
+}

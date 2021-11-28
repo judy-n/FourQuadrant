@@ -5,14 +5,17 @@ const board_id = window.location.href.split('/')[3]
 const defaultPos = {left: 0, top: 0}
 let username = null;
 
-getUsername().then(res => displayName = res)
-
 document.addEventListener("DOMContentLoaded", () => {
   const stickyArea = document.querySelector("#stickies-container");
   const createStickyButton = document.querySelector("#createsticky");
 
   const stickyTitleInput = document.querySelector("#stickytitle");
   const stickyTextInput = document.querySelector("#stickytext");
+
+  getUsername().then(res => {
+    username = res
+    document.querySelector('.name-input').value = res
+  })
 
   // helpers
   const getBoardBounds = () => {
@@ -194,11 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
   socket.on("receive note", ({ note, io_board_id }) => {
     receiveCreatedNote({ note, io_board_id });
   });
-
-  socket.on('receive name', ({name}) => {
-    username=name
-    document.querySelector('.name-input').value = name
-  })
 
   socket.on("receive update", ({ note, io_board_id }) => {
     receiveUpdatedNote({ note, io_board_id });
@@ -465,5 +463,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   document.querySelector(".share-btn").addEventListener("click", openPopup);
-  document.querySelector(".name-input").addEventListener("blur", (e) => username=e.target.value)
+  document.querySelector(".name-input").addEventListener("blur", (e) => {
+    username = e.target.value
+    setUsername(username)
+  })
 });

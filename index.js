@@ -52,6 +52,16 @@ app.get('/api/username', async (req, res, next) => {
   }
 })
 
+app.post('/api/username', async (req, res, next) => {
+  const { username } = req.body
+  if (req.session) {
+    req.session.username = username
+    res.send({ message: 'success' })
+  } else {
+    res.status(400).send({ message: 'unsuccessful' })
+  }
+})
+
 function requireHTTPS(req, res, next) {
   // The 'x-forwarded-proto' check is for Heroku
   if (!req.secure && req.get('x-forwarded-proto') !== 'https' && process.env.NODE_ENV !== "development") {
