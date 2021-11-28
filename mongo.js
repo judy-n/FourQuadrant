@@ -32,9 +32,9 @@ class Note {
 }
 
 class Visit {
-  constuctor(username) {
-    this.visitedAt = new Date()
-    this.username = username || '[Name not set]'
+  constructor(username) {
+    this.visitedAt = new Date();
+    this.username = username || '[Name not set]';
   }
 }
 
@@ -176,7 +176,7 @@ async function clearLog(board_id){
 }
 
 async function logVisitor(username){
-  const visit = new Visit(username)
+  let visit = new Visit(username)
   await client.db("FourQuadrant").collection("Visits").insertOne(visit)
   return visit
 }
