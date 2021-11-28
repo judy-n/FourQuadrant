@@ -5,9 +5,9 @@ body {
   width: 100vw;
   height: 100vh;
   grid-template-areas:
-    "x a a a s"
-    "b c c c s"
-    "b c c c s";
+    "x a a a a s"
+    "b c c c c s"
+    "b c c c c s";
   grid-template-rows: 1fr 7fr;
   grid-template-columns: 1fr 7fr 1fr;
   margin: 0;
@@ -110,7 +110,6 @@ h1 {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
 }
 
 .log-console {
@@ -342,4 +341,44 @@ h1 {
 
 .home-btn img {
   margin-left: 1rem;
+}
+
+@media only screen and (max-width: 1023px) {
+  .h-titles, .v-titles {
+    font-size: x-small;
+  }
+
+  .q-sidebar {
+    overflow-y: scroll;
+    font-size: x-small;
+    width: 20vw;
+  }
+
+  .q-sidebar input, .q-sidebar button {
+    font-size: x-small !important;
+  }
+
+  .sticky-form input, .sticky-form textarea {
+    width: 60%;
+    max-height: 20%;
+  }
+
+  .name-container input {
+    width: 60%;
+  }
+
+  .toolbar img {
+    width: 20px;
+  }
+
+  .log-console {
+    width: 90%;
+    height: 50%;
+  }
+}
+
+@media only screen and (max-width: 350px) {
+  .toolbar img {
+    width: 15px;
+  }
 }
