@@ -197,4 +197,16 @@ router.delete('/board/:board_id/log', idChecker, async (req, res, next) => {
   }
 })
 
+router.post('/adminStats', async (req, res, next) => {
+  const { secret } = req.body
+  try {
+    const stats = await mongo.getAdminStats(secret)
+    res.send({ stats })
+  } catch (e) {
+    handleError(e, res)
+    console.log('error', e)
+    next()
+  }
+})
+
 module.exports = router

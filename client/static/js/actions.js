@@ -83,3 +83,9 @@ const setUsername = (username) => {
         .then(res => res.data.message)
         .catch(console.error)
 }
+
+const getAdminStats = (secret) => {
+    return instance.post('/adminStats', {secret})
+        .then(res => res.data.stats)
+        .catch(console.error)
+}

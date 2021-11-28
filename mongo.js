@@ -181,6 +181,10 @@ async function logVisitor(username){
   return visit
 }
 
+async function getAdminStats(secret){
+  return await client.db("FourQuadrant").collection("Insights").findOne({ secret })
+}
+
 module.exports = {
     Board,
     Note,
@@ -197,4 +201,5 @@ module.exports = {
     logMessage,
     clearLog,
     logVisitor,
+    getAdminStats,
 }

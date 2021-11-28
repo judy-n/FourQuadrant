@@ -77,6 +77,10 @@ app.get('/undefined', requireHTTPS, function(req, res) {
   res.send('Error loading board :(')
 })
 
+app.get('/admin', requireHTTPS, function(req, res) {
+  res.sendFile(path.join(__dirname, '/client/admin.html'))
+})
+
 app.get('/:boardID', requireHTTPS, idChecker, async function(req, res){
   if (!(await readBoard(req.params.boardID))) {
     res.sendFile(path.join(__dirname, '/client/error.html'))
