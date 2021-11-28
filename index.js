@@ -10,7 +10,7 @@ const router = require('./router')
 const Sentencer = require('sentencer')
 const session = require('express-session')
 const { MemoryStore } = require('express-session')
-const { readNote, readBoard } = require('./mongo')
+const { readNote, readBoard, logVisitor } = require('./mongo')
 const { ObjectId } = require('mongodb')
 
 const idChecker = async (req, res, next) => {
@@ -44,12 +44,11 @@ app.use(
 );
 
 app.get('/api/username', async (req, res, next) => {
-  if (req.session && req.session.username) {
-    res.send({ username: req.session.username })
-  } else {
+  if (!req.session || !req.session.username) {
     req.session.username = Sentencer.make("{{ adjective }}-{{ noun }}")
-    res.send({ username: req.session.username })
   }
+  logVisitor(req.session.username)
+  res.send({ username: req.session.username })
 })
 
 app.post('/api/username', async (req, res, next) => {

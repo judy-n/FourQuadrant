@@ -16,6 +16,7 @@ class Board {
         this._id = new ObjectId()
         this.notes = []
         this.log = []
+        this.createdAt = new Date()
     }
 }
 
@@ -26,6 +27,14 @@ class Note {
     this.text = text;
     this.pos = pos;
     this.size = size;
+    this.createdAt = new Date()
+  }
+}
+
+class Visit {
+  constuctor(username) {
+    this.visitedAt = new Date()
+    this.username = username || '[Name not set]'
   }
 }
 
@@ -166,6 +175,12 @@ async function clearLog(board_id){
     const res = await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {log: []})
 }
 
+async function logVisitor(username){
+  const visit = new Visit(username)
+  await client.db("FourQuadrant").collection("Visits").insertOne(visit)
+  return visit
+}
+
 module.exports = {
     Board,
     Note,
@@ -181,4 +196,5 @@ module.exports = {
     updateNoteSize,
     logMessage,
     clearLog,
+    logVisitor,
 }
