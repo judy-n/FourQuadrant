@@ -89,3 +89,29 @@ const getAdminStats = (secret) => {
         .then(res => res.data.stats)
         .catch(console.error)
 }
+
+const isProtected = (board_id) => {
+    return instance.get(`/isProtected/${board_id}`)
+        .then(res => !!res.data.isProtected)
+        .catch(console.error)
+}
+
+const protect = (board_id, password) => {
+    return instance.post(`/protect/${board_id}`, {password})
+        .then(res => res.data.success)
+        .catch(console.error)
+}
+
+const checkPassword = (board_id, password) => {
+    console.log("WHAT IS", password)
+    return instance.post(`/checkPassword/${board_id}`, {password})
+        .then(res => res.data.success)
+        .catch(console.error)
+}
+
+const updatePassword = async (board_id, oldPassword, newPassword) => {
+    const success = await checkPassword(board_id, oldPassword)
+    if (success) {
+        return await protect(board_id, newPassword)
+    }
+}

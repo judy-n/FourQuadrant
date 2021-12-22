@@ -1,4 +1,5 @@
 const { MongoClient, ObjectId } = require("mongodb");
+const bcrypt = require('bcryptjs')
 require("dotenv").config();
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.flfdi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri);
@@ -17,6 +18,8 @@ class Board {
         this.notes = []
         this.log = []
         this.createdAt = new Date()
+        this.password = ""
+        this.isProtected = false
     }
 }
 
@@ -185,6 +188,24 @@ async function getAdminStats(secret){
   return await client.db("FourQuadrant").collection("Insights").findOne({ secret })
 }
 
+async function isProtected(board_id){
+  board_id = new ObjectId(board_id)
+  const board = await client.db("FourQuadrant").collection("Boards").findOne({_id: board_id})
+  return board && board.isProtected
+}
+
+async function protect(board_id, password){
+  board_id = new ObjectId(board_id)
+  password = bcrypt.hashSync(password, 10)
+  return await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {$set: {password, isProtected: true}})
+}
+
+async function checkPassword(board_id, password){
+  board_id = new ObjectId(board_id)
+  const resPassword = (await client.db("FourQuadrant").collection("Boards").findOne({_id: board_id}) || {password:''}).password
+  return bcrypt.compareSync(password, resPassword)
+}
+
 module.exports = {
     Board,
     Note,
@@ -202,4 +223,7 @@ module.exports = {
     clearLog,
     logVisitor,
     getAdminStats,
+    isProtected,
+    protect,
+    checkPassword,
 }
