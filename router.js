@@ -244,4 +244,10 @@ router.post('/checkPassword/:board_id', idChecker, async (req, res, next) => {
   }
 })
 
+// for whatsappwrapped
+router.get('/whatsappwrapped', (req, res, next) => {
+  mongo.WAWVisit()
+  res.send({ message: "success" })
+})
+
 module.exports = router

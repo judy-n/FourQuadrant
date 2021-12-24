@@ -208,6 +208,9 @@ async function checkPassword(board_id, password){
   board_id = new ObjectId(board_id)
   const resPassword = (await client.db("FourQuadrant").collection("Boards").findOne({_id: board_id}) || {password:''}).password
   return bcrypt.compareSync(password, resPassword)
+
+async function WAWVisit(){
+  return await client.db("WhatsAppWrapped").collection("Visits").insertOne({ visitedAt: new Date() })
 }
 
 module.exports = {
@@ -230,4 +233,5 @@ module.exports = {
     isProtected,
     protect,
     checkPassword,
+    WAWVisit,
 }
