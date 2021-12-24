@@ -196,8 +196,12 @@ async function isProtected(board_id){
 
 async function protect(board_id, password){
   board_id = new ObjectId(board_id)
+  let isProtected = true
+  if (!password) {
+    isProtected = false
+  }
   password = bcrypt.hashSync(password, 10)
-  return await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {$set: {password, isProtected: true}})
+  return await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {$set: {password, isProtected}})
 }
 
 async function checkPassword(board_id, password){

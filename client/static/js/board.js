@@ -276,7 +276,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function createSticky(note_id, pos) {
     const newSticky = document.createElement("div");
     newSticky.setAttribute("id", note_id);
-    newSticky.addEventListener("dblclick", (e) => console.log(e));
     const html = `<h3>${stickyTitleInput.value.replace(
       /<\/?[^>]+(>|$)/g,
       ""
@@ -386,20 +385,23 @@ document.addEventListener("DOMContentLoaded", () => {
             return password
           }
         }).then(result => {
-          checkPassword(board_id, result.value).then(success => {
-            if (success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-              })
-              resolve(true)
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error Signing In',
-              }).then(() => resolve(false))
-            }
-          })
+          if (result.isConfirmed) {
+
+            checkPassword(board_id, result.value).then(success => {
+              if (success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                })
+                resolve(true)
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error Signing In',
+                }).then(() => resolve(false))
+              }
+            })
+          }
         })
       } else {
         resolve(true)
@@ -487,7 +489,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function protectPopup() {
     const boardProtected = await isProtected(board_id)
-    console.log('ye', boardProtected)
     if (!boardProtected) {
       Swal.fire({
         title: "Protect Board",
@@ -503,19 +504,21 @@ document.addEventListener("DOMContentLoaded", () => {
           return password
         }
       }).then(result => {
-        protect(board_id, result.value).then(success => {
-          if (success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Board Protected',
-            })
-          } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error Protecting Board',
-            })
-          }
-        })
+        if (result.isConfirmed) {
+          protect(board_id, result.value).then(success => {
+            if (success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Board Protected',
+              })
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error Protecting Board',
+              })
+            }
+          })
+        }
       })
     } else {
       Swal.fire({
@@ -525,31 +528,49 @@ document.addEventListener("DOMContentLoaded", () => {
           <input type="password" id="pass-input" class="swal2-input" placeholder="Password"/>
           <input type="password" id="new-pass-input" class="swal2-input" placeholder="New Password"/>
         `,
-        confirmButtonText: 'Sign In',
+        confirmButtonText: 'Update',
         preConfirm: () => {
           const oldPassword = Swal.getPopup().querySelector('#pass-input').value
           const newPassword = Swal.getPopup().querySelector('#new-pass-input').value
           if (!oldPassword || !newPassword) {
-            Swal.showValidationMessage("Please enter a password")
-          }
-          return { oldPassword, newPassword }
-        }
-      }).then(result => {
-        const { oldPassword, newPassword } = result.value
-        updatePassword(board_id, oldPassword, newPassword).then(success => {
-          if (success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Success',
-              text: 'Password Updated'
-            })
+            Swal.showValidationMessage("Please enter a value for password")
           } else {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error Updating Password',
-            })
+            return { oldPassword, newPassword }
           }
-        })
+        },
+        showDenyButton: true,
+        denyButtonText: "Remove Password",
+        preDeny: () => {
+          const oldPassword = Swal.getPopup().querySelector('#pass-input').value
+          if (!oldPassword) {
+            Swal.showValidationMessage("Please enter your current password in the first box")
+            return false
+          } else {
+            return { oldPassword }
+          }
+        },
+        reverseButtons: true,
+      }).then(result => {
+        if (result.isConfirmed || result.isDenied) {
+          let { oldPassword, newPassword } = result.value
+          if (result.isDenied) {
+            newPassword = ""
+          }
+          updatePassword(board_id, oldPassword, newPassword).then(success => {
+            if (success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Password Updated'
+              })
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error Updating Password',
+              })
+            }
+          })
+        }
       })
     }
   }
