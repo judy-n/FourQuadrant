@@ -209,6 +209,41 @@ router.post('/adminStats', async (req, res, next) => {
   }
 })
 
+router.get('/isProtected/:board_id', idChecker, async (req, res, next) => {
+  try {
+    const isProtected = await mongo.isProtected(req.params.board_id)
+    res.send({ isProtected })
+  } catch (e) {
+    handleError(e, res)
+    console.log('error', e)
+    next()
+  }
+})
+
+router.post('/protect/:board_id', idChecker, async (req, res, next) => {
+  try {
+    const { password } = req.body
+    const result = await mongo.protect(req.params.board_id, password)
+    res.send({ success: !!result })
+  } catch (e) {
+    handleError(e, res)
+    console.log('error', e)
+    next()
+  }
+})
+
+router.post('/checkPassword/:board_id', idChecker, async (req, res, next) => {
+  try {
+    const { password } = req.body
+    const result = await mongo.checkPassword(req.params.board_id, password)
+    res.send({ success: result })
+  } catch (e) {
+    handleError(e, res)
+    console.log('error', e)
+    next()
+  }
+})
+
 // for whatsappwrapped
 router.get('/whatsappwrapped', (req, res, next) => {
   mongo.WAWVisit()

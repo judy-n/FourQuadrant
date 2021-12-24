@@ -85,28 +85,6 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  //================ Log Functions =====================//
-  const sendMessage = (message) => {
-    // add message to db log then..
-    // update this log
-    // emit socket event
-  }
-
-  const receiveMessage = (message) => {
-    // update this log
-  }
-
-  const clearLog = () => {
-    // clear db log then..
-    // update this log
-    // emit socket event
-  }
-
-  const appendThisLog = (message) => {
-    // append message to this log
-  }
-  //===================================================//
-
   interact(".sticky").resizable({
     edges: { top: false, left: false, bottom: true, right: true },
     listeners: {
@@ -298,7 +276,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function createSticky(note_id, pos) {
     const newSticky = document.createElement("div");
     newSticky.setAttribute("id", note_id);
-    newSticky.addEventListener("dblclick", (e) => console.log(e));
     const html = `<h3>${stickyTitleInput.value.replace(
       /<\/?[^>]+(>|$)/g,
       ""
@@ -374,38 +351,85 @@ document.addEventListener("DOMContentLoaded", () => {
   createStickyButton.addEventListener("click", sendCreateNote);
   applyDeleteListener();
 
-  // load notes
-  getBoard(board_id)
-    .then((board) => {
-      if (board) {
-        board.notes.forEach((note) => {
-          loadSticky(note._id, note.title, note.text, note.pos, note.size);
-        });
-        console.log('log', board.log)
-        loadLogs(board.log)
-      } else {
-        // window.location.href = "/undefined"
+  function loadLogs(logs) {
+    logs.forEach(log => {
+      if(log.includes('made a new')) {
+        const [username, title] = log.split(' made a new sticky with title ')
+        newStickyLog(username, title)
+      } else if (log.includes('updated')) {
+        const [username, title] = log.split(' updated sticky titled ')
+        updateStickyLog(username, title)
+      } else if (log.includes('removed')) {
+        const [username, title] = log.split(' removed the sticky with title ')
+        deleteStickyLog(username, title)
       }
     })
-    .catch((e) => {
-      console.log("e", e);
-      // window.location.href = "/undefined"
-    });
+  }
 
-    function loadLogs(logs) {
-      logs.forEach(log => {
-        if(log.includes('made a new')) {
-          const [username, title] = log.split(' made a new sticky with title ')
-          newStickyLog(username, title)
-        } else if (log.includes('updated')) {
-          const [username, title] = log.split(' updated sticky titled ')
-          updateStickyLog(username, title)
-        } else if (log.includes('removed')) {
-          const [username, title] = log.split(' removed the sticky with title ')
-          deleteStickyLog(username, title)
-        }
-      })
-    }
+  async function loadBoard() {
+    const boardProtected = await isProtected(board_id)
+    const check = new Promise((resolve, reject) => {
+      if (boardProtected) {
+        Swal.fire({
+          title: "Sign In",
+          text: "This board is password protected",
+          html: `
+            <input type="password" id="pass-input" class="swal2-input" placeholder="Password"/>
+          `,
+          confirmButtonText: 'Sign In',
+          preConfirm: () => {
+            const password = Swal.getPopup().querySelector('#pass-input').value
+            if (!password) {
+              Swal.showValidationMessage("Please enter a password")
+            }
+            return password
+          }
+        }).then(result => {
+          if (result.isConfirmed) {
+
+            checkPassword(board_id, result.value).then(success => {
+              if (success) {
+                Swal.fire({
+                  icon: 'success',
+                  title: 'Success',
+                })
+                resolve(true)
+              } else {
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error Signing In',
+                }).then(() => resolve(false))
+              }
+            })
+          }
+        })
+      } else {
+        resolve(true)
+      }
+    })
+    check.then(success => {
+      if (!success) {
+        window.location.href = '/'
+      }
+      getBoard(board_id)
+        .then((board) => {
+          if (board) {
+            board.notes.forEach((note) => {
+              loadSticky(note._id, note.title, note.text, note.pos, note.size);
+            });
+            loadLogs(board.log)
+          } else {
+            // window.location.href = "/undefined"
+          }
+        })
+        .catch((e) => {
+          console.log("e", e);
+          // window.location.href = "/undefined"
+        });
+    })
+  }
+  loadBoard()
+  
 
     function newStickyLog(username, title){
       const newLog = document.createElement('p')
@@ -462,7 +486,97 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
+  async function protectPopup() {
+    const boardProtected = await isProtected(board_id)
+    if (!boardProtected) {
+      Swal.fire({
+        title: "Protect Board",
+        html: `
+          <input type="password" id="pass-input" class="swal2-input" placeholder="Password"/>
+        `,
+        confirmButtonText: 'Protect',
+        preConfirm: () => {
+          const password = Swal.getPopup().querySelector('#pass-input').value
+          if (!password) {
+            Swal.showValidationMessage("Please enter a password")
+          }
+          return password
+        }
+      }).then(result => {
+        if (result.isConfirmed) {
+          protect(board_id, result.value).then(success => {
+            if (success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Board Protected',
+              })
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error Protecting Board',
+              })
+            }
+          })
+        }
+      })
+    } else {
+      Swal.fire({
+        title: "Update Password",
+        text: "This board is password protected",
+        html: `
+          <input type="password" id="pass-input" class="swal2-input" placeholder="Password"/>
+          <input type="password" id="new-pass-input" class="swal2-input" placeholder="New Password"/>
+        `,
+        confirmButtonText: 'Update',
+        preConfirm: () => {
+          const oldPassword = Swal.getPopup().querySelector('#pass-input').value
+          const newPassword = Swal.getPopup().querySelector('#new-pass-input').value
+          if (!oldPassword || !newPassword) {
+            Swal.showValidationMessage("Please enter a value for password")
+          } else {
+            return { oldPassword, newPassword }
+          }
+        },
+        showDenyButton: true,
+        denyButtonText: "Remove Password",
+        preDeny: () => {
+          const oldPassword = Swal.getPopup().querySelector('#pass-input').value
+          if (!oldPassword) {
+            Swal.showValidationMessage("Please enter your current password in the first box")
+            return false
+          } else {
+            return { oldPassword }
+          }
+        },
+        reverseButtons: true,
+      }).then(result => {
+        if (result.isConfirmed || result.isDenied) {
+          let { oldPassword, newPassword } = result.value
+          if (result.isDenied) {
+            newPassword = ""
+          }
+          updatePassword(board_id, oldPassword, newPassword).then(success => {
+            if (success) {
+              Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'Password Updated'
+              })
+            } else {
+              Swal.fire({
+                icon: 'error',
+                title: 'Error Updating Password',
+              })
+            }
+          })
+        }
+      })
+    }
+  }
+
   document.querySelector(".share-btn").addEventListener("click", openPopup);
+  document.querySelector(".lock-btn").addEventListener("click", protectPopup)
   document.querySelector(".name-input").addEventListener("blur", (e) => {
     username = e.target.value
     setUsername(username)
