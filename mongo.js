@@ -185,6 +185,10 @@ async function getAdminStats(secret){
   return await client.db("FourQuadrant").collection("Insights").findOne({ secret })
 }
 
+async function WAWVisit(){
+  return await client.db("WhatsAppWrapped").collection("Visits").insertOne({ visitedAt: new Date() })
+}
+
 module.exports = {
     Board,
     Note,
@@ -202,4 +206,5 @@ module.exports = {
     clearLog,
     logVisitor,
     getAdminStats,
+    WAWVisit,
 }

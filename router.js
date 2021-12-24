@@ -209,4 +209,10 @@ router.post('/adminStats', async (req, res, next) => {
   }
 })
 
+// for whatsappwrapped
+router.get('/whatsappwrapped', (req, res, next) => {
+  mongo.WAWVisit()
+  res.send({ message: "success" })
+})
+
 module.exports = router
