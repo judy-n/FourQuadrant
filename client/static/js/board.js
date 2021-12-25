@@ -496,7 +496,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Swal.fire({
         title: "Protect Board",
         html: `
-          <input type="password" id="pass-input" class="swal2-input" placeholder="Password"/>
+          <input type="password" id="pass-input" class="swal2-input" placeholder="Password" style="font-family: Space Mono"/>
         `,
         confirmButtonColor: '#577399',
         confirmButtonText: `<span style="font-family: Space Mono">Protect</span>`,
