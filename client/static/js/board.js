@@ -376,7 +376,8 @@ document.addEventListener("DOMContentLoaded", () => {
           html: `
             <input type="password" id="pass-input" class="swal2-input" placeholder="Password"/>
           `,
-          confirmButtonText: 'Sign In',
+          confirmButtonColor: '#577399',
+          confirmButtonText: `<span style="font-family: Space Mono">Sign In</span>`,
           preConfirm: () => {
             const password = Swal.getPopup().querySelector('#pass-input').value
             if (!password) {
@@ -392,6 +393,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 Swal.fire({
                   icon: 'success',
                   title: 'Success',
+                  confirmButtonColor: '#577399',
+                  confirmButtonText: `<span style="font-family: Space Mono">OK</span>`,
                 })
                 resolve(true)
               } else {
@@ -429,15 +432,15 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
   loadBoard()
-  
+
 
     function newStickyLog(username, title){
       const newLog = document.createElement('p')
       newLog.classList.add("log-entry")
-      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> made a new sticky with title ` 
+      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> made a new sticky with title `
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
-      logArea.appendChild(newLog)  
+      logArea.appendChild(newLog)
       logArea.scrollTop = logArea.scrollHeight
       logMessage(board_id, `${username} made a new sticky with title ${title}`)
     }
@@ -445,10 +448,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateStickyLog(username, title){
       const newLog = document.createElement('p')
       newLog.classList.add("log-entry")
-      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> updated sticky titled ` 
+      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> updated sticky titled `
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
-      logArea.appendChild(newLog)  
+      logArea.appendChild(newLog)
       logArea.scrollTop = logArea.scrollHeight
       logMessage(board_id, `${username} updated sticky titled ${title}`)
     }
@@ -456,10 +459,10 @@ document.addEventListener("DOMContentLoaded", () => {
     function deleteStickyLog(username, title){
       const newLog = document.createElement('p')
       newLog.classList.add("log-entry")
-      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> removed the sticky with title ` 
+      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> removed the sticky with title `
       + `<span class="log-keyword">` + title + `</span>`
       const logArea = document.querySelector(".log-console")
-      logArea.appendChild(newLog) 
+      logArea.appendChild(newLog)
       logArea.scrollTop = logArea.scrollHeight
       logMessage(board_id, `${username} removed the sticky with title ${title}`)
     }
@@ -495,7 +498,8 @@ document.addEventListener("DOMContentLoaded", () => {
         html: `
           <input type="password" id="pass-input" class="swal2-input" placeholder="Password"/>
         `,
-        confirmButtonText: 'Protect',
+        confirmButtonColor: '#577399',
+        confirmButtonText: `<span style="font-family: Space Mono">Protect</span>`,
         preConfirm: () => {
           const password = Swal.getPopup().querySelector('#pass-input').value
           if (!password) {
@@ -510,6 +514,8 @@ document.addEventListener("DOMContentLoaded", () => {
               Swal.fire({
                 icon: 'success',
                 title: 'Board Protected',
+                confirmButtonColor: '#577399',
+                confirmButtonText: `<span style="font-family: Space Mono">OK</span>`
               })
             } else {
               Swal.fire({
@@ -525,10 +531,11 @@ document.addEventListener("DOMContentLoaded", () => {
         title: "Update Password",
         text: "This board is password protected",
         html: `
-          <input type="password" id="pass-input" class="swal2-input" placeholder="Password"/>
-          <input type="password" id="new-pass-input" class="swal2-input" placeholder="New Password"/>
+          <input type="password" id="pass-input" class="swal2-input" placeholder="Password" style="font-family: Space Mono"/>
+          <input type="password" id="new-pass-input" class="swal2-input" placeholder="New Password" style="font-family: Space Mono"/>
         `,
-        confirmButtonText: 'Update',
+        confirmButtonColor: '#577399',
+        confirmButtonText: `<span style="font-family: Space Mono">Update</span>`,
         preConfirm: () => {
           const oldPassword = Swal.getPopup().querySelector('#pass-input').value
           const newPassword = Swal.getPopup().querySelector('#new-pass-input').value
@@ -539,7 +546,7 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         },
         showDenyButton: true,
-        denyButtonText: "Remove Password",
+        denyButtonText: `<span style="font-family: Space Mono">Remove Password</span>`,
         preDeny: () => {
           const oldPassword = Swal.getPopup().querySelector('#pass-input').value
           if (!oldPassword) {
@@ -561,7 +568,9 @@ document.addEventListener("DOMContentLoaded", () => {
               Swal.fire({
                 icon: 'success',
                 title: 'Success',
-                text: 'Password Updated'
+                text: 'Password Updated',
+                confirmButtonColor: '#577399',
+                confirmButtonText: `<span style="font-family: Space Mono">OK</span>`
               })
             } else {
               Swal.fire({
