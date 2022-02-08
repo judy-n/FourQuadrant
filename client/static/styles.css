@@ -8,9 +8,10 @@ body {
     "x a a a a s"
     "b c c c c s"
     "b c c c c s";
-  grid-template-rows: 1fr 7fr;
-  grid-template-columns: 1fr 7fr 1fr;
+  grid-template-rows: 1fr repeat(2, 7fr);
+  grid-template-columns: 1fr repeat(4, 7fr) 1fr;
   margin: 0;
+  overflow: hidden;
 }
 
 body > div {
@@ -135,7 +136,7 @@ h1 {
 .name-container input, .title-container input {
   background-color: #f0f9ff44;
   background-clip: padding-box;
-  border: 2px dashed #577399;
+  border: 2px solid #577399;
   border-radius: 0.25rem;
   color: #f7f7ff;
   font-family: "Space Mono", monospace;
