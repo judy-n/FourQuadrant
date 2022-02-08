@@ -23,6 +23,12 @@ const getBoard = (board_id) => {
         .catch(console.error)
 }
 
+const renameBoard = (board_id, name) => {
+    return instance.post(`/board/rename/${board_id}`, {name})
+        .then(res => res.data.message)
+        .catch(console.error)
+}
+
 const getNote = (note_id) => {
     return instance.get(`/note/${note_id}`)
         .then(res => res.data.note)
@@ -30,7 +36,7 @@ const getNote = (note_id) => {
 }
 
 const deleteBoard = (board_id) => {
-    return instance.delete(`/board/${board_id}`)
+    return instance.delete(`/board/rename/${board_id}`)
         .then(res => res.data.board)
         .catch(console.error)
 }

@@ -20,6 +20,7 @@ class Board {
         this.createdAt = new Date()
         this.password = ""
         this.isProtected = false
+        this.name = "My Board"
     }
 }
 
@@ -73,6 +74,16 @@ async function readBoard(id) {
     console.log("Couldn't find this Board");
     return null;
   }
+}
+
+async function renameBoard(id, name) {
+  // change board.name
+  const res = await client
+    .db("FourQuadrant")
+    .collection("Boards")
+    .findOneAndUpdate({ _id: new ObjectId(id) }, { $set: { name: name }})
+  // don't know what res is here
+  return res
 }
 
 async function populateNotes(board) {
@@ -220,6 +231,7 @@ module.exports = {
   createNote,
   createBoard,
   readBoard,
+  renameBoard,
   populateNotes,
   readNote,
   removeBoard,

@@ -48,35 +48,39 @@
     </div>
 
     <div class="q-sidebar">
+        <tr>
+            <div id="stickies-container"></div>
+        </tr>
+        <div class="title-container">
+            <input class="board-title" type="text" spellcheck="false" value="" />
+        </div>
+        <div class="toolbar">
+            <a href="https://www.fourquadrant.tech/" class="home-btn"><img src="/icons/home.png"></a>
+            <a href="#" class="share-btn"><img src="/icons/share.png"></a>
+            <a href="#" class="lock-btn"><img src="/icons/lock.png"></a>
+        </div>
+        
+        <div class="name-container">
+            <p class="name-title">Username:</p>
+            <input class="name-input" type="text" spellcheck="false"/>
+
+        </div>
+        <div class="sticky-form">
+            <label for="stickytitle">Title for your sticky:</label>
+            <input type="text" name="stickytitle" id="stickytitle" />
+            <label for="stickytext">Write something down:</label>
+            <textarea
+                name="stickytext"
+                id="stickytext"
+                cols="24"
+                rows="10"
+            ></textarea>
+            <button class="sbtn click-btn yellow-btn" id="createsticky">Stick it!</button>
+        </div>
+
+        <p class="history">History</p>
     
-    <div id="stickies-container"></div>
-    <div class="toolbar">
-        <a href="https://www.fourquadrant.tech/" class="home-btn"><img src="/icons/home.png"></a>
-        <a href="#" class="share-btn"><img src="/icons/share.png"></a>
-        <a href="#" class="lock-btn"><img src="/icons/lock.png"></a>
-     </div>
-     
-    <div class="name-container">
-        <p class="name-title">Name:</p>
-        <input class="name-input" type="text" spellcheck="false"/>
-
-    </div>
-    <div class="sticky-form">
-        <label for="stickytitle">Title for your sticky:</label>
-        <input type="text" name="stickytitle" id="stickytitle" />
-        <label for="stickytext">Write something down:</label>
-        <textarea
-            name="stickytext"
-            id="stickytext"
-            cols="24"
-            rows="10"
-        ></textarea>
-        <button class="sbtn  click-btn yellow-btn" id="createsticky">Stick it!</button>
-    </div>
-
-    <p class="history">History</p>
-   
-    <div class="log-console">
+        <div class="log-console">
     </div>
     
  

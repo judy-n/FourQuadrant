@@ -421,6 +421,9 @@ document.addEventListener("DOMContentLoaded", () => {
               loadSticky(note._id, note.title, note.text, note.pos, note.size);
             });
             loadLogs(board.log)
+            console.log(board)
+            document.title = board.name
+            document.querySelector('.board-title').setAttribute('value', board.name)
           } else {
             // window.location.href = "/undefined"
           }
@@ -589,5 +592,9 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelector(".name-input").addEventListener("blur", (e) => {
     username = e.target.value
     setUsername(username)
+  })
+  document.querySelector(".board-title").addEventListener("blur", (e) => {
+    document.title = e.target.value
+    renameBoard(board_id, e.target.value)
   })
 });

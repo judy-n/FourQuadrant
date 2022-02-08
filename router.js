@@ -89,6 +89,17 @@ router.get("/board/:board_id", idChecker, async (req, res, next) => {
   }
 });
 
+router.post("/board/rename/:board_id", idChecker, async (req, res, next) => {
+  const { name } = req.body
+  
+  try {
+    let r = await mongo.renameBoard(req.params.board_id, name)
+    res.send({ message: "success!" })
+  } catch (e) {
+    handleError(e, res);
+  }
+})
+
 router.get("/note/:note_id", idChecker, (req, res, next) => {
   mongo
     .readNote(req.params.note_id)
