@@ -349,16 +349,35 @@ h1 {
   display: flex;
   column-gap: 0.5rem;
   margin-top: -1rem;
+  margin-left: 1rem;
 }
 
-.toolbar img {
-  width: 25px;
-  padding: 0.1rem;
+.toolbar a {
+  text-decoration: none;
+}
+
+.toolbar span {
   border-radius: 5px;
+  color: #bdd5ea;
+  font-size: xx-large;
 }
 
-.toolbar img:hover {
+.toolbar span:hover {
   background: #4A6182;
+}
+
+.info-btn {
+  color: #bdd5ea;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  font-size: large;
+  text-decoration: none;
+}
+
+.brand-img {
+  width: 45px;
+  margin: 0.5rem;
 }
 
 .home-btn img {
@@ -403,4 +422,8 @@ h1 {
   .toolbar img {
     width: 15px;
   }
+}
+
+.material-icons-outlined {
+  font-family: 'Material Icons Outlined';
 }

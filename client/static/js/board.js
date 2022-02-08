@@ -421,7 +421,6 @@ document.addEventListener("DOMContentLoaded", () => {
               loadSticky(note._id, note.title, note.text, note.pos, note.size);
             });
             loadLogs(board.log)
-            console.log(board)
             document.title = board.name
             document.querySelector('.board-title').setAttribute('value', board.name)
           } else {
@@ -597,4 +596,14 @@ document.addEventListener("DOMContentLoaded", () => {
     document.title = e.target.value
     renameBoard(board_id, e.target.value)
   })
+  document.querySelector(".info-btn").addEventListener("click", () => swal.fire({
+    icon: "info",
+    title: "About",
+    iconColor: "#577399",
+    showCloseButton: true,
+    showConfirmButton: false,
+    // closeButtonColor: "#577399",
+    // closeButtonHtml: "<h1>Continue</h1>",
+    html: "FourQuadrant is an open-source program maintained and run by <a href=\"https://judyn.me\">Judy</a> and <a href=\"https://www.julienbl.me\">Julien</a>, two students at the University of Toronto.<br>Check out the source code on github and join our slack to chat with us!<br><br><a href=\"https://github.com/judy-n/FourQuadrant\" class=\"gh-btn\"><img class=\"brand-img\" src=\"icons/GitHub-Mark-120px-plus.png\"></a><a href=\"https://join.slack.com/t/fourquadrantworkspace/shared_invite/zt-138mkw6v6-1eraHaxQ~PTBQsGp59mJmQ\" class=\"gh-btn\"><img class=\"brand-img\" src=\"icons/Slack_Mark_Web.png\"></a>"
+  }))
 });
