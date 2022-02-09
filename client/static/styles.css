@@ -7,6 +7,7 @@ body {
   grid-template-areas:
     "x a a a a s"
     "b c c c c s"
+    "b c c c c s"
     "b c c c c s";
   grid-template-rows: 1fr repeat(2, 7fr);
   grid-template-columns: 1fr repeat(4, 7fr) 1fr;
@@ -377,7 +378,34 @@ h1 {
 
 .brand-img {
   width: 45px;
-  margin: 0.5rem;
+  margin: 0.5rem 1.5rem;
+}
+
+.gh-btn {
+  position: relative;
+  display: inline-block;
+}
+
+.gh-btn .brand-tt {
+  visibility: hidden;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  text-align: center;
+  padding: 2px 2px;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 1;
+  /* position */
+  width: max-content;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-weight: 800;
+  font-size: small;
+}
+
+.gh-btn:hover .brand-tt {
+  visibility: visible;
 }
 
 .home-btn img {
