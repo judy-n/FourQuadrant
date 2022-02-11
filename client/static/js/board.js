@@ -586,6 +586,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  document.body.onresize = () => {
+    // reposition all stickies
+  }
+
   document.querySelector(".share-btn").addEventListener("click", (e) => {
     e.preventDefault()
     openPopup()

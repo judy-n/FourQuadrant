@@ -74,7 +74,7 @@ app.get('/', requireHTTPS, function(req, res) {
 })
 
 app.get('/undefined', requireHTTPS, function(req, res) {
-  res.send('Error loading board :(')
+  res.sendFile(path.join(__dirname, '/client/error.html'))
 })
 
 app.get('/admin', requireHTTPS, function(req, res) {
