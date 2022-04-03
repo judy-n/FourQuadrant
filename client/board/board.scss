@@ -1,6 +1,15 @@
+$light-blue: #bdd5eb;
+$md-blue: #f0f9ff44;
+$dark-blue: #577399;
+$darker-blue: #4A6182;
+$white: #f7f7ff;
+$sticky-yellow: #f4e285;
+$sticky-shadow: #b8ac6d;
+$sticky-in-border: #e0be15;
+
 body {
   font-family: "Space Mono", monospace;
-  background: #bdd5ea;
+  background: $light-blue;
   display: grid;
   width: 100vw;
   height: 100vh;
@@ -21,10 +30,10 @@ body {
 
 .h-titles {
   grid-area: a;
-  background: #bdd5ea;
-  color: #577399;
+  background: $light-blue;
+  color: $dark-blue;
   font-size: larger;
-  text-decoration: underline solid 5px #f7f7ff;
+  text-decoration: underline solid 5px $white;
   display: grid;
   grid-template-areas: "left right";
 }
@@ -49,10 +58,10 @@ h1 {
 
 .v-titles {
   grid-area: b;
-  background: #bdd5ea;
-  color: #577399;
+  background: $light-blue;
+  color: $dark-blue;
   font-size: larger;
-  text-decoration: underline solid 5px #f7f7ff;
+  text-decoration: underline solid 5px $white;
   width: 100%;
   height: 100%;
   grid-template-areas:
@@ -60,7 +69,7 @@ h1 {
     "bot";
 
   h1 {
-    background: #bdd5ea;
+    background: $light-blue;
   }
 }
 
@@ -75,7 +84,7 @@ h1 {
 
 .q-container {
   grid-area: c;
-  background: #f7f7ff;
+  background: $white;
   width: 100%;
   height: 100%;
   grid-template-areas:
@@ -85,18 +94,18 @@ h1 {
 
 .q1 {
   grid-area: q1;
-  border-right: 2px dashed #bdd5ea;
-  border-bottom: 2px dashed #bdd5ea;
+  border-right: 2px dashed $light-blue;
+  border-bottom: 2px dashed $light-blue;
 }
 
 .q2 {
   grid-area: q2;
-  border-bottom: 2px dashed #bdd5ea;
+  border-bottom: 2px dashed $light-blue;
 }
 
 .q3 {
   grid-area: q3;
-  border-right: 2px dashed #bdd5ea;
+  border-right: 2px dashed $light-blue;
 }
 
 .q4 {
@@ -105,7 +114,7 @@ h1 {
 
 .q-sidebar {
   grid-area: s;
-  background: #577399;
+  background: $dark-blue;
   width: min-content;
   height: 100%;
   display: flex;
@@ -115,7 +124,7 @@ h1 {
 
 .log-console {
   width: calc(100% - 4rem);
-  background-color: #bdd5ea;
+  background-color: $light-blue;
   margin-top: 0rem;
   margin-left: 1rem;
   margin-right: 1rem;
@@ -125,7 +134,7 @@ h1 {
   overflow-y: scroll;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  color: #577399;
+  color: $dark-blue;
 }
 
 .log-console::-webkit-scrollbar {
@@ -134,11 +143,11 @@ h1 {
 }
 
 .name-container input, .title-container input {
-  background-color: #f0f9ff44;
+  background-color: $md-blue;
   background-clip: padding-box;
-  border: 2px solid #577399;
+  border: 2px solid $dark-blue;
   border-radius: 0.25rem;
-  color: #f7f7ff;
+  color: $white;
   font-family: "Space Mono", monospace;
   font-size: 1rem;
   font-weight: 400;
@@ -150,7 +159,7 @@ h1 {
   outline: none;
   
   &:focus {
-    border: 2px dashed #f7f7ff;
+    border: 2px dashed $white;
   }
 }
 
@@ -168,7 +177,7 @@ h1 {
 .title-container input {
   font-size: large;
   font-weight: 800;
-  background: #4A6182;
+  background: $darker-blue;
 }
 
 .rotate {
@@ -193,7 +202,7 @@ h1 {
 }
 
 .sticky {
-  background: #f4e285;
+  background: $sticky-yellow;
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
   color: black;
   cursor: grab;
@@ -212,36 +221,36 @@ h1 {
   }
 
   h3, .input-h3 {
-    border-bottom: dashed 2px #e0be15;
+    border-bottom: dashed 2px $sticky-in-border;
     margin: 0 0 1rem;
     min-height: 1.3rem;
     outline: none;
-    background-color: #f4e285;
-    border-color: #e0be15;
+    background-color: $sticky-yellow;
+    border-color: $sticky-in-border;
     /* padding: 0 1.5rem 0.25rem 0; */
     min-height: min-content !important;
     min-width: min-content !important;
   }
 
   .input-h3:focus {
-    border: 2px dashed #e0be15;
+    border: 2px dashed $sticky-in-border;
   }
 
   p, .input-p {
     margin: 0;
     outline: none;
-    background-color: #f4e285;
-    border-color: #e0be15;
+    background-color: $sticky-yellow;
+    border-color: $sticky-in-border;
     min-height: min-content !important;
     min-width: min-content !important;
   }
 
   .input-p:focus {
-    border: 2px dashed #e0be15;
+    border: 2px dashed $sticky-in-border;
   }
 
   .deletesticky {
-    color: #e0be15;
+    color: $sticky-in-border;
     cursor: pointer;
     font-size: 2rem;
     position: absolute;
@@ -265,16 +274,16 @@ h1 {
   max-height: calc(50% - 4rem);
 
   label, input, textarea {
-    color: #fff;
+    color: $white;
     display: block;
   }
 
   input, textarea {
-    background-color: #f0f9ff44;
+    background-color: $md-blue;
     background-clip: padding-box;
-    border: 2px dashed #577399;
+    border: 2px dashed $dark-blue;
     border-radius: 0.25rem;
-    color: #f7f7ff;
+    color: $white;
     font-family: "Space Mono", monospace;
     font-size: 1rem;
     font-weight: 400;
@@ -285,7 +294,7 @@ h1 {
     resize: none;
 
     &:focus {
-      border: 2px dashed #f7f7ff;
+      border: 2px dashed $white;
       outline: none;
     }
   }
@@ -299,10 +308,10 @@ h1 {
   -moz-user-select: none;
   -ms-user-select: none;
   -webkit-user-select: none;
-  color: #577399;
+  color: $dark-blue;
   display: inline-block;
   font-family: "Courier New", Courier, monospace;
-  background-color: #f4e285;
+  background-color: $sticky-yellow;
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5;
@@ -310,14 +319,14 @@ h1 {
   text-align: center;
   user-select: none;
   vertical-align: middle;
-  box-shadow: 0 5px 0 #b8ac6d;
+  box-shadow: 0 5px 0 $sticky-shadow;
 
   &:focus {
-    box-shadow: 0 5px 0 #b8ac6d;
+    box-shadow: 0 5px 0 $sticky-shadow;
   }
 
   &:active {
-    box-shadow: 0 2.5px 0 #b8ac6d;
+    box-shadow: 0 2.5px 0 $sticky-shadow;
   }
 }
 
@@ -329,7 +338,7 @@ h1 {
 .log-entry {
   margin: 1rem;
   font-size: 0.75rem;
-  border-top: dashed 1px #577399;
+  border-top: dashed 1px $dark-blue;
   padding-top: 1rem;
 }
 
@@ -354,17 +363,17 @@ h1 {
 
   span {
     border-radius: 5px;
-    color: #bdd5ea;
+    color: $light-blue;
     font-size: xx-large;
 
     &:hover {
-      background: #4A6182;
+      background: $darker-blue;
     }
   }
 }
 
 .info-btn {
-  color: #bdd5ea;
+  color: $light-blue;
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
