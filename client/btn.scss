@@ -12,7 +12,7 @@
   text-align: center;
 }
 
-button {
+#create-button {
   width: 160px;
   height: 60px;
   background: darkslateblue;
@@ -21,85 +21,124 @@ button {
   cursor:pointer;
   position: relative;
   border-radius:6px;
-}
 
-button a {
-  color: #fff;
-  text-transform:uppercase;
-  letter-spacing:1px;
-}
+  a {
+    color: #fff;
+    text-transform:uppercase;
+    letter-spacing:1px;
+  }
 
-/* let's shape */
+  span {
+    .shape {
+      height: 60px;
+      width: 160px;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+    span {
+      content:"";
+      position: absolute;
+      margin: auto;
+      height: 8px;
+      width: 2px;
+      background: darkslateblue;
+      opacity: 0;
 
-button span.shape {
-  height: 60px;
-  width: 160px;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
+      &:nth-of-type(1) {
+        top: -20px;
+        left: 0;
+        right: 0;
+      }
 
-button span span {
-  content:"";
-  position: absolute;
-  margin: auto;
-  height: 8px;
-  width: 2px;
-  background: darkslateblue;
-  opacity: 0;
-}
+      &:nth-of-type(2) {
+        bottom: -20px;
+        left: 0;
+        right: 0;
+      }
 
-button span span:nth-of-type(1) {
-  top: -20px;
-  left: 0;
-  right: 0;
-}
+      &:nth-of-type(3) {
+        top: 0;
+        bottom: 0;
+        left: -10px;
+      }
 
-button span span:nth-of-type(2) {
-  bottom: -20px;
-  left: 0;
-  right: 0;
-}
+      &:nth-of-type(4) {
+        top:0;
+        bottom: 0;
+        right: -10px;
+      }
 
-button span span:nth-of-type(3) {
-  top:0;
-  bottom: 0;
-  left: -10px;
-}
+      &:nth-of-type(5) {
+        top: -20px;
+        left: -70%;
+        right: 0;
+        transform:rotate(-30deg);
+      }
 
-button span span:nth-of-type(4) {
-  top:0;
-  bottom: 0;
-  right: -10px;
-}
+      &:nth-of-type(6) {
+        top: -20px;
+        left: 0;
+        right: -70%;
+        transform:rotate(30deg);
+      }
 
-button span span:nth-of-type(5) {
-  top: -20px;
-  left: -70%;
-  right: 0;
-  transform:rotate(-30deg);
-}
+      &:nth-of-type(7) {
+        bottom: -20px;
+        right: 0;
+        left: -70%;
+        transform:rotate(30deg);
+      }
 
-button span span:nth-of-type(6) {
-  top: -20px;
-  left: 0;
-  right: -70%;
-  transform:rotate(30deg);
-}
-button span span:nth-of-type(7) {
-  bottom: -20px;
-  right: 0;
-  left: -70%;
-  transform:rotate(30deg);
-}
-button span span:nth-of-type(8) {
-  bottom: -20px;
-  left: 0;
-  right: -70%;
-  transform:rotate(-30deg);
-}
+      &:nth-of-type(8) {
+        bottom: -20px;
+        left: 0;
+        right: -70%;
+        transform:rotate(-30deg);
+      }
+    }
+  }
 
+  &.active {
+    animation: bounce 0.3s ease-out 1;
 
+    span {
+      span {
+        &:nth-of-type(1) {
+          animation: anim1 0.4s ease-out 1;
+        }
+
+        &:nth-of-type(2) {
+          animation: anim2 0.4s ease-out 1;
+        }
+
+        &:nth-of-type(3) {
+          animation: anim3 0.4s ease-out 1;
+        }
+
+        &:nth-of-type(4) {
+          animation: anim4 0.4s ease-out 1;
+        }
+
+        &:nth-of-type(5) {
+          animation: anim5 0.4s ease-out 1;
+        }
+
+        &:nth-of-type(6) {
+          animation: anim6 0.4s ease-out 1;
+        }
+
+        &:nth-of-type(7) {
+          animation: anim7 0.4s ease-out 1;
+        }
+
+        &:nth-of-type(8) {
+          animation: anim8 0.4s ease-out 1;
+        }
+      }
+    }
+  }
+}
 
 /* let's animate this */
 
@@ -108,36 +147,6 @@ button span span:nth-of-type(8) {
   50%{transform: scale(1.1);}
   100%{transform: scale(1);}
 }
-
-button.active {
-  animation: bounce 0.3s ease-out 1;
-}
-
-button.active span span:nth-of-type(1) {
-  animation: anim1 0.4s ease-out 1;
-}
-button.active span span:nth-of-type(2) {
-  animation: anim2 0.4s ease-out 1;
-}
-button.active span span:nth-of-type(3) {
-  animation: anim3 0.4s ease-out 1;
-}
-button.active span span:nth-of-type(4) {
-  animation: anim4 0.4s ease-out 1;
-}
-button.active span span:nth-of-type(5) {
-  animation: anim5 0.4s ease-out 1;
-}
-button.active span span:nth-of-type(6) {
-  animation: anim6 0.4s ease-out 1;
-}
-button.active span span:nth-of-type(7) {
-  animation: anim7 0.4s ease-out 1;
-}
-button.active span span:nth-of-type(8) {
-  animation: anim8 0.4s ease-out 1;
-}
-
 
 @keyframes anim1 {
   0%{transform: scaleY(0.5);opacity: 0;}
