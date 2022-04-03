@@ -1,8 +1,6 @@
-const express = require("express");
-const router = express.Router();
-const mongo = require("./mongo");
-const { ObjectId } = require("mongodb");
-const Sentencer = require('sentencer');
+const router = require("express").Router();
+const mongo = require('./mongo')
+const { ObjectId } = require("mongodb")
 
 // helper function for you <3
 function isMongoError(error) {
@@ -36,16 +34,20 @@ const idChecker = async (req, res, next) => {
 };
 
 router.post("/board", (req, res, next) => {
+  console.log("got req")
   mongo
     .createBoard()
     .then((board) => {
       if (board) {
+        console.log('working?')
         res.send({ board: board });
       } else {
+        console.log('did not happen')
         res.status(500).send("unknown error");
       }
     })
     .catch((err) => {
+      console.log('did not happen')
       handleError(err, res);
       console.log("error", err);
       next();
@@ -200,7 +202,7 @@ router.patch('/board/:board_id/log', idChecker, async (req, res, next) => {
 router.delete('/board/:board_id/log', idChecker, async (req, res, next) => {
   try {
     await mongo.clearLog(req.params.board_id)
-    res.send({ message: 'success' })
+    res.send({ message: 'success!' })
   } catch (e) {
     handleError(e, res)
     console.log('error', e)

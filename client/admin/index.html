@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script defer src="/js/actions.js"></script>
-    <script defer src="/js/admin.js"></script>
-    <link rel="stylesheet" href="/css/admin.css">
+    <script type="module" defer src="./admin.ts"></script>
+    <link rel="stylesheet" href="./admin.css">
     <title>Admin</title>
 </head>
 <body>
@@ -15,7 +13,7 @@
         <!-- Auth -->
         <div class="admin-auth">
             <input type="text" name="secret" id="secret-input" placeholder="Admin Secret">
-            <button onclick="auth()">Submit</button>
+            <button id="auth-submit">Submit</button>
         </div>
         <!-- Show -->
         <table class="hide admin-table">

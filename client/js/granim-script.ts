@@ -1,4 +1,6 @@
-var granimInstance = new Granim({
+import Granim from "granim"
+
+new Granim({
     element: '#granim-canvas',
     direction: 'left-right',
     isPausedWhenNotInView: true,

@@ -1,38 +1,54 @@
 "use strict";
 
+//@ts-ignore
+const mode = import.meta.env.MODE || "production" // get vite mode, default to prod
+
+import { io } from "socket.io-client"
+import interact from "interactjs"
+import Swal from "sweetalert2"
+import { getUsername, isProtected, getBoard, createNote, updateNote, updateNotePos, updateNoteSize, deleteNote, getNote, checkPassword, logMessage, protect, updatePassword, setUsername, renameBoard } from "../actions"
+import { el, textNode } from "../js/element"
+import { Pos, Size } from "../types";
+// mock actions for dev environment
+
 const socket = io()
-const board_id = window.location.href.split('/')[3]
+const board_id = mode === "development" ?  sessionStorage.getItem("__dev_boardId") : window.location.href.split('/')[3]
+console.log("What is", board_id)
 const defaultPos = {left: 0, top: 0}
 let username = null;
 
+// helpers
+const getBoardBounds = () => {
+  const topMin = document.querySelector(".h-titles").clientHeight;
+  const leftMin = document.querySelector(".v-titles").clientWidth;
+  const topMax = document.querySelector(".q-container").clientHeight + topMin;
+  const leftMax =
+    document.querySelector(".q-container").clientWidth + leftMin;
+  return { topMin, leftMin, topMax, leftMax };
+};
+
+const normalize = ({ x, y }) => {
+  const { topMin, leftMin, topMax, leftMax } = getBoardBounds();
+  const left = x * (leftMax - leftMin) + leftMin;
+  const top = y * (topMax - topMin) + topMin;
+  return { left, top };
+};
+
+let currentBounds = getBoardBounds()
+console.log(currentBounds)
+
 document.addEventListener("DOMContentLoaded", () => {
   const stickyArea = document.querySelector("#stickies-container");
-  const createStickyButton = document.querySelector("#createsticky");
+  const createStickyButton = document.querySelector("#createsticky") as HTMLButtonElement;
 
-  const stickyTitleInput = document.querySelector("#stickytitle");
-  const stickyTextInput = document.querySelector("#stickytext");
+  const stickyTitleInput = document.querySelector("#stickytitle") as HTMLInputElement;
+  const stickyTextInput = document.querySelector("#stickytext") as HTMLTextAreaElement;
 
   getUsername().then(res => {
     username = res
-    document.querySelector('.name-input').value = res
+    const input = document.querySelector(".name-input") as HTMLInputElement
+    input.value = res
   })
-
-  // helpers
-  const getBoardBounds = () => {
-    const topMin = document.querySelector(".h-titles").clientHeight;
-    const leftMin = document.querySelector(".v-titles").clientWidth;
-    const topMax = document.querySelector(".q-container").clientHeight + topMin;
-    const leftMax =
-      document.querySelector(".q-container").clientWidth + leftMin;
-    return { topMin, leftMin, topMax, leftMax };
-  };
-
-  const normalize = ({ x, y }) => {
-    const { topMin, leftMin, topMax, leftMax } = getBoardBounds();
-    const left = x * (leftMax - leftMin) + leftMin;
-    const top = y * (topMax - topMin) + topMin;
-    return { left, top };
-  };
 
   // socket.io functions
   const sendCreateNote = () => {
@@ -45,11 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
     createNote(board_id, note)
       .then((newNote) => {
         socket.emit("note created", { note: newNote, board_id, username });
+        console.log('did socket emit???')
         createSticky(newNote._id, pos);
       })
       .catch((e) => console.log("an unknown error occurred"));
   };
-  const sendUpdateNote = (_id, title, text, pos) => {
+  const sendUpdateNote = (_id, title, text) => {
     const note = { _id, title, text, tempQuadrant: defaultPos };
     updateNote(note)
       .then((resNote) => {
@@ -152,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   const receiveMoveNote = ({ note_id, pos, io_board_id }) => {
     if (io_board_id === board_id) {
-      const noteEl = document.querySelector(`.sticky[id="${note_id}"]`);
+      const noteEl = document.querySelector(`.sticky[id="${note_id}"]`) as HTMLDivElement;
       const { left, top } = normalize({ x: pos.left, y: pos.top });
       noteEl.style.left = `${left}px`;
       noteEl.style.top = `${top}px`;
@@ -160,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   const receiveResizeNote = ({ note_id, size, io_board_id }) => {
     if (io_board_id === board_id) {
-      const noteEl = document.querySelector(`.sticky[id="${note_id}"]`);
+      const noteEl = document.querySelector(`.sticky[id="${note_id}"]`) as HTMLDivElement;
       noteEl.style.width = `${size.width}px`;
       noteEl.style.height = `${size.height}px`;
     }
@@ -210,21 +227,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
-  const deleteSticky = e => {
+  const deleteSticky = async e => {
     const id = e.target.parentElement.getAttribute('id')
-    const title = getNote(id).title || '[no title]'
+    const title = (await getNote(id)).title || '[no title]'
     e.target.parentNode.remove();
     sendDeleteNote(id, title);
   };
 
   const editSticky = (e) => {
     const sticky = e.target.parentElement;
-    const edith3 = document.createElement("input");
-    edith3.classList = sticky.querySelector("h3").classList;
+    const edith3 = document.createElement("input") as HTMLInputElement;
+    edith3.classList.add(...[...sticky.querySelector("h3").classList]);
     edith3.classList.add("input-h3");
     edith3.value = sticky.querySelector("h3").innerText;
     const editp = document.createElement("textarea");
-    editp.classList = sticky.querySelector("p").classList;
+    editp.classList.add(...[...sticky.querySelector("p").classList]); // TODO ugly pls fix here and above
     editp.classList.add("input-p");
     editp.value = sticky.querySelector("p").innerText;
     sticky.querySelector("h3").remove();
@@ -253,11 +270,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       // reset note
       const h3 = document.createElement("h3");
-      h3.classList = sticky.querySelector(".input-h3").classList;
+      h3.classList.add(...[...sticky.querySelector(".input-h3").classList]);
       h3.classList.remove("input-h3");
       h3.innerText = title;
       const p = document.createElement("p");
-      p.classList = sticky.querySelector(".input-p").classList;
+      p.classList.add(...[...sticky.querySelector(".input-p").classList]); // TODO ugly fix this too PLEASE
       p.classList.remove("input-p");
       p.innerText = text;
       sticky.querySelector(".input-h3").remove();
@@ -274,41 +291,33 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   function createSticky(note_id, pos) {
-    const newSticky = document.createElement("div");
-    newSticky.setAttribute("id", note_id);
-    const html = `<h3>${stickyTitleInput.value.replace(
-      /<\/?[^>]+(>|$)/g,
-      ""
-    )}</h3><p>${stickyTextInput.value
-      .replace(/<\/?[^>]+(>|$)/g, "")
-      .replace(
-        /\r\n|\r|\n/g,
-        "<br />"
-      )}</p><input type="image" src="/icons/edit.png" class="editsticky"></input><span class="deletesticky">&times;</span>`;
-    newSticky.classList.add("drag", "sticky");
-    newSticky.innerHTML = html;
+    const newSticky = el(
+      'div',
+      'drag sticky',
+      {"id": note_id},
+      el('h3', '', {}, textNode(stripHtml(stickyTitleInput.value))),
+      el('p', '', {}, ...splitBr(stickyTextInput.value)),
+      el('input', 'editsticky', {'type': 'image', 'src': '/icons/edit.png'}),
+      el('span', 'deletesticky', {}, "&times;")
+    )
     // newSticky.style.backgroundColor = randomColor();
     stickyArea.append(newSticky);
     positionSticky(newSticky, pos);
     applyDeleteListener();
     clearStickyForm();
   }
-  function loadSticky(note_id, title, text, pos, size = null) {
-    const newSticky = document.createElement("div");
-    newSticky.setAttribute("id", note_id);
-    const html = `<h3>${title.replace(/<\/?[^>]+(>|$)/g, "")}</h3><p>${text
-      .replace(/<\/?[^>]+(>|$)/g, "")
-      .replace(
-        /\r\n|\r|\n/g,
-        "<br />"
-      )}</p><input type="image" src="/icons/edit.png" class="editsticky"></input><span class="deletesticky">&times;</span>`;
-    newSticky.classList.add("drag", "sticky");
-    newSticky.innerHTML = html;
-    if (size) {
-      newSticky.style.width = `${size.width}px`;
-      newSticky.style.height = `${size.height}px`;
-    }
-    // newSticky.style.backgroundColor = randomColor();
+  function loadSticky(note_id: string, title: string, text: string, pos: Pos, size: Size = null) {
+
+    const newSticky = el(
+      'div',
+      'drag sticky',
+      {"id": note_id, "style.width": size ? `${size.width}px` : "", "style.height": size ? `${size.height}px` : ""},
+      // children below
+      el('h3', '', {}, textNode(stripHtml(title))),
+      el('p', '', {}, ...splitBr(text)),
+      el('input', 'editsticky', {'type': 'image', 'src': '/icons/edit.png'}),
+      el('span', 'deletesticky', {}, "&times;")
+    )
     stickyArea.append(newSticky);
     positionSticky(newSticky, pos);
     applyDeleteListener();
@@ -327,12 +336,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function stripHtml(text) {
     return text.replace(/<\/?[^>]+(>|$)/g, "");
   }
-
-  function randomColor() {
-    const r = 200 + Math.floor(Math.random() * 56);
-    const g = 200 + Math.floor(Math.random() * 56);
-    const b = 200 + Math.floor(Math.random() * 56);
-    return "rgb(" + r + "," + g + "," + b + ")";
+  function splitBr(text) {
+    return stripHtml(text).split(/(\r|\n|\r\n)/g).map(t => {
+      return /(\r|\n|\r\n)/g.test(t) ? el("br", "", {}) : t
+    })
   }
 
   function applyDeleteListener() {
@@ -379,7 +386,8 @@ document.addEventListener("DOMContentLoaded", () => {
           confirmButtonColor: '#577399',
           confirmButtonText: `<span style="font-family: Space Mono">Sign In</span>`,
           preConfirm: () => {
-            const password = Swal.getPopup().querySelector('#pass-input').value
+            const passInput = Swal.getPopup().querySelector("#pass-input") as HTMLInputElement
+            const password = passInput.value
             if (!password) {
               Swal.showValidationMessage("Please enter a password")
             }
@@ -387,7 +395,6 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         }).then(result => {
           if (result.isConfirmed) {
-
             checkPassword(board_id, result.value).then(success => {
               if (success) {
                 Swal.fire({
@@ -418,7 +425,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .then((board) => {
           if (board) {
             board.notes.forEach((note) => {
-              loadSticky(note._id, note.title, note.text, note.pos, note.size);
+              loadSticky(note._id.toString(), note.title, note.text, note.pos, note.size);
             });
             loadLogs(board.log)
             document.title = board.name
@@ -469,6 +476,7 @@ document.addEventListener("DOMContentLoaded", () => {
       logMessage(board_id, `${username} removed the sticky with title ${title}`)
     }
 
+  // sweetalert functions
   function openPopup() {
     const link = window.location.href;
     Swal.fire({
@@ -503,7 +511,8 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmButtonColor: '#577399',
         confirmButtonText: `<span style="font-family: Space Mono">Protect</span>`,
         preConfirm: () => {
-          const password = Swal.getPopup().querySelector('#pass-input').value
+          const passInput = Swal.getPopup().querySelector("#pass-input") as HTMLInputElement
+          const password = passInput.value
           if (!password) {
             Swal.showValidationMessage("Please enter a password")
           }
@@ -539,8 +548,10 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmButtonColor: '#577399',
         confirmButtonText: `<span style="font-family: Space Mono">Update</span>`,
         preConfirm: () => {
-          const oldPassword = Swal.getPopup().querySelector('#pass-input').value
-          const newPassword = Swal.getPopup().querySelector('#new-pass-input').value
+          const oldPassInput = Swal.getPopup().querySelector("#pass-input") as HTMLInputElement
+          const newPassInput = Swal.getPopup().querySelector("#new-pass-input") as HTMLInputElement
+          const oldPassword = oldPassInput.value
+          const newPassword = newPassInput.value
           if (!oldPassword || !newPassword) {
             Swal.showValidationMessage("Please enter a value for password")
           } else {
@@ -550,7 +561,8 @@ document.addEventListener("DOMContentLoaded", () => {
         showDenyButton: true,
         denyButtonText: `<span style="font-family: Space Mono">Remove Password</span>`,
         preDeny: () => {
-          const oldPassword = Swal.getPopup().querySelector('#pass-input').value
+          const oldPassInput = Swal.getPopup().querySelector("#pass-input") as HTMLInputElement
+          const oldPassword = oldPassInput.value
           if (!oldPassword) {
             Swal.showValidationMessage("Please enter your current password in the first box")
             return false
@@ -586,8 +598,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function clearBoard() {
+    [...document.querySelectorAll('.sticky')].forEach(sticky => sticky.remove())
+  }
+
   document.body.onresize = () => {
-    // reposition all stickies
+    // get board and position all stickies
+    // clearBoard()
+    // loadBoard()
   }
 
   document.querySelector(".share-btn").addEventListener("click", (e) => {
@@ -599,22 +617,22 @@ document.addEventListener("DOMContentLoaded", () => {
     protectPopup()
   })
   document.querySelector(".name-input").addEventListener("blur", (e) => {
-    username = e.target.value
+    username = (e.target as HTMLInputElement).value
     setUsername(username)
   })
   document.querySelector(".board-title").addEventListener("blur", (e) => {
-    document.title = e.target.value
-    renameBoard(board_id, e.target.value)
+    document.title = (e.target as HTMLInputElement).value
+    renameBoard(board_id, (e.target as HTMLInputElement).value)
   })
   document.querySelector(".info-btn").addEventListener("click", (e) => {
     e.preventDefault()
-    swal.fire({
+    Swal.fire({
       icon: "info",
       title: "About",
       iconColor: "#577399",
       showCloseButton: true,
       showConfirmButton: false,
-      html: "FourQuadrant is an open-source program maintained and run by <a href=\"https://judyn.me\">Judy</a> and <a href=\"https://www.julienbl.me\">Julien</a>, two students at the University of Toronto.<br>Check out the source code on github and join our slack to chat with us!<br><br><a href=\"https://github.com/judy-n/FourQuadrant\" class=\"gh-btn\"><img class=\"brand-img\" src=\"icons/GitHub-Mark-120px-plus.png\"><span class=\"brand-tt\">See our code!</span></img></a><a href=\"https://join.slack.com/t/fourquadrantworkspace/shared_invite/zt-138mkw6v6-1eraHaxQ~PTBQsGp59mJmQ\" class=\"gh-btn\"><img class=\"brand-img\" src=\"icons/Slack_Mark_Web.png\"><span class=\"brand-tt\">Join our Slack!</span></img></a>"
+      html: "FourQuadrant is an open-source program maintained and run by <a href=\"https://judyn.me\">Judy</a> and <a href=\"https://www.julienbl.me\">Julien</a>, two students at the University of Toronto.<br>Check out the source code on github and join our slack to chat with us!<br><br><a href=\"https://github.com/judy-n/FourQuadrant\" class=\"gh-btn\"><img class=\"brand-img\" src=\"../icons/GitHub-Mark-120px-plus.png\"><span class=\"brand-tt\">See our code!</span></img></a><a href=\"https://join.slack.com/t/fourquadrantworkspace/shared_invite/zt-138mkw6v6-1eraHaxQ~PTBQsGp59mJmQ\" class=\"gh-btn\"><img class=\"brand-img\" src=\"../icons/Slack_Mark_Web.png\"><span class=\"brand-tt\">Join our Slack!</span></img></a>"
     })
   })
 });

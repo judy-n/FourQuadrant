@@ -8,29 +8,22 @@
     <meta name="keywords" content="Productivity, Sticky, Notes, Board, Organization, Eisenhower, Matrix">
     <meta property="og:title" content="FourQuadrant">
     <meta property="og:description" content="A helpful productivity tool based on the Eisenhower Matrix">
-    <meta property="og:image" content="/icons/4Q2.png">
+    <meta property="og:image" content="icons/4Q2.png">
     <meta property="og:url" content="https://www.fourquadrant.tech">
     <meta name="twitter:title" content="FourQuadrant">
     <meta name="twitter:description" content="A helpful productivity tool based on the Eisenhower Matrix">
-    <meta name="twitter:image" content="/icons/4Q2.png">
+    <meta name="twitter:image" content="icons/4Q2.png">
     <meta name="twitter:card" content="summary_large_image">
-    <title>Four Quadrant</title>
-    <link rel="stylesheet" href="/index.css">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300i,400" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono&display=swap" rel="stylesheet">
-    <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script defer src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
-    <script defer src="/lib/granim.min.js"></script>
-    <script defer src="/lib/script.js"></script>
-    <script defer src="/js/actions.js"></script>
-    <script defer src="/js/index.js"></script>
-    <link rel="stylesheet" href="/css/btn.css">
     <link href="//cdn.muicss.com/mui-0.10.3/css/mui.min.css" rel="stylesheet" type="text/css" />
-    <script src="//cdn.muicss.com/mui-0.10.3/js/mui.min.js"></script>
-    <link rel="shortcut icon" href="/icons/4Q2.ico">
-
-
+    <script defer src="//cdn.muicss.com/mui-0.10.3/js/mui.min.js"></script>
+    <link rel="shortcut icon" href="icons/4Q2.ico">
+    <script type="module" defer src="./index.ts"></script>
+    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./btn.css">
+    <title>Four Quadrant</title>
 </head>
 <body>
     <canvas id="granim-canvas"></canvas>
@@ -74,7 +67,7 @@
       <h2></h2>
       <div class="wrap">
         <div class="box">
-        <button class="cta" onclick="newBoard()">
+        <button class="cta">
           <a href="#">Create new Board</a>
           <span class="shape">
             <span></span>

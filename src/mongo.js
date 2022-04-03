@@ -1,6 +1,7 @@
-const { MongoClient, ObjectId } = require("mongodb");
+require("dotenv").config()
+const { MongoClient, ObjectId } = require("mongodb")
 const bcrypt = require('bcryptjs')
-require("dotenv").config();
+console.log("WHAT", process.env.DB_USERNAME, process.env.DB_PASSWORD)
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.flfdi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri);
 client.connect().then(() => console.log('mongo connected')).catch((err) => console.error(err));

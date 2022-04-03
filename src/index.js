@@ -1,22 +1,25 @@
-const express = require('express')
-const path = require('path')
-const http = require('http')
+const { config } = require("dotenv")
+config();
+const express = require("express")
+const cors = require("cors")
+const path = require("path")
+const http = require("http")
 const app = express()
 const server = http.createServer(app)
-const { Server } = require('socket.io')
+const { Server } = require("socket.io")
 const io = new Server(server)
-const port = process.env.PORT || 3000
-const router = require('./router')
-const Sentencer = require('sentencer')
-const session = require('express-session')
-const { MemoryStore } = require('express-session')
-const { readNote, readBoard, logVisitor } = require('./mongo')
-const { ObjectId } = require('mongodb')
+const port = process.env.PORT || 8080
+const router = require("./router")
+const Sentencer = require("sentencer")
+const session = require("express-session")
+const { MemoryStore } = require("express-session")
+const { readBoard, logVisitor } = require("./mongo")
+const { ObjectId } = require("mongodb")
 
 const idChecker = async (req, res, next) => {
   if (req.params.boardID && !ObjectId.isValid(req.params.boardID)) {
     console.log("invalid board id:", req.params.board_id);
-    res.sendFile(path.join(__dirname, '/client/error.html'))
+    res.sendFile(path.join(__dirname, '../client/dist/error/index.html'))
     return;
   }
   next();
@@ -24,7 +27,12 @@ const idChecker = async (req, res, next) => {
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(express.static(path.join(__dirname, '/client/static')))
+app.use(express.static(path.join(__dirname, '../client/dist')))
+// allow cors on dev
+if (process.env.NODE_ENV === "development") {
+  console.log('allowing')
+  app.use(cors())
+}
   
 app.use('/api', router);
 
@@ -70,22 +78,18 @@ function requireHTTPS(req, res, next) {
 }
 
 app.get('/', requireHTTPS, function(req, res) {
-  res.sendFile(path.join(__dirname, '/client/index.html'));
-})
-
-app.get('/undefined', requireHTTPS, function(req, res) {
-  res.sendFile(path.join(__dirname, '/client/error.html'))
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 })
 
 app.get('/admin', requireHTTPS, function(req, res) {
-  res.sendFile(path.join(__dirname, '/client/admin.html'))
+  res.sendFile(path.join(__dirname, '../client/dist/admin/index.html'))
 })
 
 app.get('/:boardID', requireHTTPS, idChecker, async function(req, res){
   if (!(await readBoard(req.params.boardID))) {
-    res.sendFile(path.join(__dirname, '/client/error.html'))
+    res.sendFile(path.join(__dirname, '../client/dist/error/index.html'))
   }
-  res.sendFile(path.join(__dirname, '/client/board.html'))
+  res.sendFile(path.join(__dirname, '../client/dist/board/index.html'))
 })
 
 // socket.io functions
@@ -139,5 +143,5 @@ io.on('connection', socket => {
 });
 
 server.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`app listening at http://localhost:${port}`);
 });

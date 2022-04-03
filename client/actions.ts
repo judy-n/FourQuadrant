@@ -1,121 +1,135 @@
+import axios from "axios"
+import type { BoardDoc, Note, NoteDoc } from "./types"
+
+// different port for dev server ???
+//@ts-ignore
+let baseURL = import.meta.env.MODE === "development" ? "http://localhost:8080/api" : "/api"
+
+console.log('with', baseURL)
+
 // where the frontend communicates with the backend
 const instance = axios.create({
-  baseURL: "/api",
+  baseURL,
   timeout: 1000,
   headers: { "X-Custom-Header": "foobar" },
 });
 
-const createBoard = () => {
-    return instance.post('/board')
-        .then(res => res.data.board)
-        .catch(console.error)
+export const createBoard = (): Promise<BoardDoc> => {
+    return instance.post('/board', {},  { timeout: 20000 })
+        .then(res => {
+            console.log('in tyhen')
+            return res.data.board
+        })
+        .catch((err) => {
+            console.error('oops', err)
+        })
 }
 
-const createNote = (board_id, note) => {
+export const createNote = (board_id: string, note: Note): Promise<NoteDoc> => {
+    console.log("sending", board_id, note)
     return instance.post(`/note/${board_id}`, {note})
         .then(res => res.data.newNote)
         .catch(console.error)
 }
 
-const getBoard = (board_id) => {
+export const getBoard = (board_id: string): Promise<BoardDoc> => {
     return instance.get(`/board/${board_id}`)
         .then(res => res.data.board)
         .catch(console.error)
 }
 
-const renameBoard = (board_id, name) => {
+export const renameBoard = (board_id, name): Promise<string> => {
     return instance.post(`/board/rename/${board_id}`, {name})
         .then(res => res.data.message)
         .catch(console.error)
 }
 
-const getNote = (note_id) => {
+export const getNote = (note_id): Promise<NoteDoc> => {
     return instance.get(`/note/${note_id}`)
         .then(res => res.data.note)
         .catch(console.error)
 }
 
-const deleteBoard = (board_id) => {
+export const deleteBoard = (board_id): Promise<BoardDoc> => {
     return instance.delete(`/board/rename/${board_id}`)
         .then(res => res.data.board)
         .catch(console.error)
 }
 
-const deleteNote = (note_id) => {
+export const deleteNote = (note_id): Promise<NoteDoc> => {
     return instance.delete(`/note/${note_id}`)
         .then(res => res.data.note)
         .catch(console.error)
 }
 
-const updateNote = (note) => {
+export const updateNote = (note): Promise<NoteDoc> => {
     return instance.patch('/note', {note})
         .then(res => res.data.note)
         .catch(console.error)
 }
 
-const updateNotePos = (note_id, pos) => {
+export const updateNotePos = (note_id, pos): Promise<{left: number, top: number}> => {
     return instance.patch(`/note/${note_id}/position`, {pos})
         .then(res => res.data.pos)
         .catch(console.error)
 }
 
-const updateNoteSize = (note_id, size) => {
+export const updateNoteSize = (note_id, size): Promise<{width: number, height: number}> => {
   return instance
     .patch(`/note/${note_id}/size`, { size })
     .then((res) => res.data.size)
     .catch((err) => console.error);
 };
 
-const logMessage = (board_id, message) => {
+export const logMessage = (board_id, message): Promise<string> => {
     return instance.patch(`/board/${board_id}/log`, {message})
         .then(res => res.data.message)
         .catch(console.error)
 }
 
-const clearLog = (board_id) => {
+export const clearLog = (board_id): Promise<string> => {
     return instance.delete(`/board/${board_id}/log`)
         .then(res => res.data.message)
         .catch(console.error)
 }
 
-const getUsername = () => {
+export const getUsername = (): Promise<string> => {
     return instance.get('/username')
         .then(res => res.data.username)
         .catch(console.error)
 }
 
-const setUsername = (username) => {
+export const setUsername = (username): Promise<string> => {
     return instance.post('/username', {username})
         .then(res => res.data.message)
         .catch(console.error)
 }
 
-const getAdminStats = (secret) => {
+export const getAdminStats = (secret): Promise<any> => { // TODO
     return instance.post('/adminStats', {secret})
         .then(res => res.data.stats)
         .catch(console.error)
 }
 
-const isProtected = (board_id) => {
+export const isProtected = (board_id) => {
     return instance.get(`/isProtected/${board_id}`)
         .then(res => !!res.data.isProtected)
         .catch(console.error)
 }
 
-const protect = (board_id, password) => {
+export const protect = (board_id, password): Promise<boolean> => {
     return instance.post(`/protect/${board_id}`, {password})
         .then(res => res.data.success)
         .catch(console.error)
 }
 
-const checkPassword = (board_id, password) => {
-    console.log("WHAT IS", password)
+export const checkPassword = (board_id, password): Promise<boolean> => {
     return instance.post(`/checkPassword/${board_id}`, {password})
         .then(res => res.data.success)
         .catch(console.error)
 }
 
-const updatePassword = async (board_id, oldPassword, newPassword) => {
+export const updatePassword = async (board_id, oldPassword, newPassword): Promise<boolean> => {
     const success = await checkPassword(board_id, oldPassword)
     if (success) {
         return await protect(board_id, newPassword)
