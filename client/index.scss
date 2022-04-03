@@ -5,14 +5,8 @@ body {
 }
 
 .container {
-  /* position: absolute;
-  height: 300px;
-  width: 600px;
-  top: 60px;
-  left: calc(50% - 300px); */
   position: relative;
   display: flex;
-  /* margin: 100px; */
 }
 
 .card {
@@ -23,26 +17,29 @@ body {
   background-color: white;
   border-radius: 10px;
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-  /* box-shadow: -1rem 0 3rem #000; */
-  /*   margin-left: -50px; */
   transition: 0.4s ease-out;
   position: relative;
   left: 0px;
-}
 
-.card:not(:first-child) {
-  margin-left: -50px;
-}
+  &:not(:first-child) {
+    margin-left: -50px;
+  }
 
-.card:hover {
-  transform: translateY(-20px);
-  transition: 0.4s ease-out;
-}
+  &:hover {
+    transform: translateY(-20px);
+    transition: 0.4s ease-out;
 
-.card:hover ~ .card {
-  position: relative;
-  left: 50px;
-  transition: 0.4s ease-out;
+    .filledbar {
+      width: 120px;
+      transition: 0.4s ease-out;
+    }
+
+    & ~ .card {
+      position: relative;
+      left: 50px;
+      transition: 0.4s ease-out;
+    }
+  }
 }
 
 .title {
@@ -86,11 +83,6 @@ body {
   transition: 0.6s ease-out;
 }
 
-.card:hover .filledbar {
-  width: 120px;
-  transition: 0.4s ease-out;
-}
-
 #granim-canvas {
   position: absolute;
   display: block;
@@ -102,15 +94,6 @@ body {
   left: 0;
 }
 
-.site-title h2 {
-  z-index: 1;
-  color: black;
-  background-color: rgb(226, 242, 254);
-  font-size: 40px;
-  font-family: "Space Mono", monospace;
-  /* text-shadow: 1px 1px 3px black; */
-}
-
 .site-title {
   margin: 50px;
   z-index: 1;
@@ -118,6 +101,14 @@ body {
   border-radius: 15px;
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
   padding: 15px;
+
+  h2 {
+    z-index: 1;
+    color: black;
+    background-color: rgb(226, 242, 254);
+    font-size: 40px;
+    font-family: "Space Mono", monospace;
+  }
 }
 
 .desc {
@@ -127,10 +118,10 @@ body {
   margin-bottom: 30px;
   margin-left: 20px;
   font-family: "Space Mono", monospace;
-}
 
-.desc p {
-  font-size: 8px;
+  p {
+    font-size: 8px;
+  }
 }
 
 .mui-btn.mui-btn--raised {
@@ -138,10 +129,10 @@ body {
   background-color: rgb(226, 242, 254);
   color: rgb(108, 124, 136);
   box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
-}
 
-.mui-btn.mui-btn--raised:hover {
-  color: rgb(108, 124, 136);
+  &:hover {
+    color: rgb(108, 124, 136);
+  }
 }
 
 .cta {
