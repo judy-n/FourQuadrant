@@ -6,7 +6,7 @@
   "scripts": {
     "dev-backend": "nodemon src/index.js -w ./src/**/*",
     "start": "node src/index.js",
-    "dev": "concurrently \"npm run dev-backend\" \"cd clientt && npm run dev\""
+    "dev": "concurrently \"npm run dev-backend\" \"cd client && npm run dev\""
   },
   "repository": {
     "type": "git",
