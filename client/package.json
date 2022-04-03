@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite --port 8081",
+    "build": "vite build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "sass": "^1.49.11",
     "vite": "^2.9.1"
   },
   "dependencies": {
