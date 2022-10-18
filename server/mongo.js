@@ -1,10 +1,13 @@
-require("dotenv").config()
-const { MongoClient, ObjectId } = require("mongodb")
-const bcrypt = require('bcryptjs')
-console.log("WHAT", process.env.DB_USERNAME, process.env.DB_PASSWORD)
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.flfdi.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+require("dotenv").config();
+const { MongoClient, ObjectId } = require("mongodb");
+const bcrypt = require("bcryptjs");
+console.log("WHAT", process.env.DB_USERNAME, process.env.DB_PASSWORD);
+const uri = process.env.MONGODB_URI;
 const client = new MongoClient(uri);
-client.connect().then(() => console.log('mongo connected')).catch((err) => console.error(err));
+client
+  .connect()
+  .then(() => console.log("mongo connected"))
+  .catch((err) => console.error(err));
 
 async function listDatabases() {
   databasesList = await client.db().admin().listDatabases();
@@ -14,15 +17,15 @@ async function listDatabases() {
 }
 
 class Board {
-    constructor() {
-        this._id = new ObjectId()
-        this.notes = []
-        this.log = []
-        this.createdAt = new Date()
-        this.password = ""
-        this.isProtected = false
-        this.name = "My Board"
-    }
+  constructor() {
+    this._id = new ObjectId();
+    this.notes = [];
+    this.log = [];
+    this.createdAt = new Date();
+    this.password = "";
+    this.isProtected = false;
+    this.name = "My Board";
+  }
 }
 
 class Note {
@@ -32,14 +35,14 @@ class Note {
     this.text = text;
     this.pos = pos;
     this.size = size;
-    this.createdAt = new Date()
+    this.createdAt = new Date();
   }
 }
 
 class Visit {
   constructor(username) {
     this.visitedAt = new Date();
-    this.username = username || '[Name not set]';
+    this.username = username || "[Name not set]";
   }
 }
 
@@ -82,9 +85,9 @@ async function renameBoard(id, name) {
   const res = await client
     .db("FourQuadrant")
     .collection("Boards")
-    .findOneAndUpdate({ _id: new ObjectId(id) }, { $set: { name: name }})
+    .findOneAndUpdate({ _id: new ObjectId(id) }, { $set: { name: name } });
   // don't know what res is here
-  return res
+  return res;
 }
 
 async function populateNotes(board) {
@@ -180,50 +183,73 @@ async function updateNoteSize(note_id, size) {
   return res;
 }
 
-async function logMessage(board_id, message){
-    board_id = new ObjectId(board_id)
-    const res = await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {$push: {log: message}})
+async function logMessage(board_id, message) {
+  board_id = new ObjectId(board_id);
+  const res = await client
+    .db("FourQuadrant")
+    .collection("Boards")
+    .updateOne({ _id: board_id }, { $push: { log: message } });
 }
 
-async function clearLog(board_id){
-    board_id = new ObjectId(board_id)
-    const res = await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {log: []})
+async function clearLog(board_id) {
+  board_id = new ObjectId(board_id);
+  const res = await client
+    .db("FourQuadrant")
+    .collection("Boards")
+    .updateOne({ _id: board_id }, { log: [] });
 }
 
-async function logVisitor(username){
-  let visit = new Visit(username)
-  await client.db("FourQuadrant").collection("Visits").insertOne(visit)
-  return visit
+async function logVisitor(username) {
+  let visit = new Visit(username);
+  await client.db("FourQuadrant").collection("Visits").insertOne(visit);
+  return visit;
 }
 
-async function getAdminStats(secret){
-  return await client.db("FourQuadrant").collection("Insights").findOne({ secret })
+async function getAdminStats(secret) {
+  return await client
+    .db("FourQuadrant")
+    .collection("Insights")
+    .findOne({ secret });
 }
 
-async function isProtected(board_id){
-  board_id = new ObjectId(board_id)
-  const board = await client.db("FourQuadrant").collection("Boards").findOne({_id: board_id})
-  return board && board.isProtected
+async function isProtected(board_id) {
+  board_id = new ObjectId(board_id);
+  const board = await client
+    .db("FourQuadrant")
+    .collection("Boards")
+    .findOne({ _id: board_id });
+  return board && board.isProtected;
 }
 
-async function protect(board_id, password){
-  board_id = new ObjectId(board_id)
-  let isProtected = true
+async function protect(board_id, password) {
+  board_id = new ObjectId(board_id);
+  let isProtected = true;
   if (!password) {
-    isProtected = false
+    isProtected = false;
   }
-  password = bcrypt.hashSync(password, 10)
-  return await client.db("FourQuadrant").collection("Boards").updateOne({_id: board_id}, {$set: {password, isProtected}})
+  password = bcrypt.hashSync(password, 10);
+  return await client
+    .db("FourQuadrant")
+    .collection("Boards")
+    .updateOne({ _id: board_id }, { $set: { password, isProtected } });
 }
 
-async function checkPassword(board_id, password){
-  board_id = new ObjectId(board_id)
-  const resPassword = (await client.db("FourQuadrant").collection("Boards").findOne({_id: board_id}) || {password:''}).password
-  return bcrypt.compareSync(password, resPassword)
+async function checkPassword(board_id, password) {
+  board_id = new ObjectId(board_id);
+  const resPassword = (
+    (await client
+      .db("FourQuadrant")
+      .collection("Boards")
+      .findOne({ _id: board_id })) || { password: "" }
+  ).password;
+  return bcrypt.compareSync(password, resPassword);
 }
 
-async function WAWVisit(){
-  return await client.db("WhatsAppWrapped").collection("Visits").insertOne({ visitedAt: new Date() })
+async function WAWVisit() {
+  return await client
+    .db("WhatsAppWrapped")
+    .collection("Visits")
+    .insertOne({ visitedAt: new Date() });
 }
 
 module.exports = {
@@ -248,4 +274,4 @@ module.exports = {
   protect,
   checkPassword,
   WAWVisit,
-}
+};

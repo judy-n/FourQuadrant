@@ -9,6 +9,7 @@ import Swal from "sweetalert2"
 import { getUsername, isProtected, getBoard, createNote, updateNote, updateNotePos, updateNoteSize, deleteNote, getNote, checkPassword, logMessage, protect, updatePassword, setUsername, renameBoard } from "../actions"
 import { el, textNode } from "../js/element"
 import { Pos, Size } from "../types";
+import { infoPopup, openPopup, protectPopup } from './popups'
 // mock actions for dev environment
 
 const socket = io()
@@ -442,170 +443,41 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   loadBoard()
 
-
-    function newStickyLog(username, title){
-      const newLog = document.createElement('p')
-      newLog.classList.add("log-entry")
-      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> made a new sticky with title `
-      + `<span class="log-keyword">` + title + `</span>`
-      const logArea = document.querySelector(".log-console")
-      logArea.appendChild(newLog)
-      logArea.scrollTop = logArea.scrollHeight
-      logMessage(board_id, `${username} made a new sticky with title ${title}`)
-    }
-
-    function updateStickyLog(username, title){
-      const newLog = document.createElement('p')
-      newLog.classList.add("log-entry")
-      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> updated sticky titled `
-      + `<span class="log-keyword">` + title + `</span>`
-      const logArea = document.querySelector(".log-console")
-      logArea.appendChild(newLog)
-      logArea.scrollTop = logArea.scrollHeight
-      logMessage(board_id, `${username} updated sticky titled ${title}`)
-    }
-
-    function deleteStickyLog(username, title){
-      const newLog = document.createElement('p')
-      newLog.classList.add("log-entry")
-      newLog.innerHTML = `<span class="log-keyword">` + username + `</span> removed the sticky with title `
-      + `<span class="log-keyword">` + title + `</span>`
-      const logArea = document.querySelector(".log-console")
-      logArea.appendChild(newLog)
-      logArea.scrollTop = logArea.scrollHeight
-      logMessage(board_id, `${username} removed the sticky with title ${title}`)
-    }
-
-  // sweetalert functions
-  function openPopup() {
-    const link = window.location.href;
-    Swal.fire({
-      title: "Share this board!",
-      text: "Click the button to copy the link & share it with others!",
-      html: '<input type="text" value="' + link + '" readonly size="60">',
-      showCancelButton: true,
-      confirmButtonColor: '#577399',
-      confirmButtonText: `<span style="font-family: Space Mono">Copy Link</span>`,
-      cancelButtonText: `<span style="font-family: Space Mono">Cancel</span>`,
-    }).then((result) => {
-      if (result.isConfirmed) {
-        navigator.clipboard.writeText(link);
-        Swal.fire({
-          title: "Copied!",
-          icon: "success",
-          confirmButtonColor: '#577399',
-          confirmButtonText: `<span style="font-family: Space Mono">OK</span>`
-        });
-      }
-    });
+  function newStickyLog(username, title){
+    const newLog = document.createElement('p')
+    newLog.classList.add("log-entry")
+    newLog.innerHTML = `<span class="log-keyword">` + username + `</span> made a new sticky with title `
+    + `<span class="log-keyword">` + title + `</span>`
+    const logArea = document.querySelector(".log-console")
+    logArea.appendChild(newLog)
+    logArea.scrollTop = logArea.scrollHeight
+    logMessage(board_id, `${username} made a new sticky with title ${title}`)
   }
 
-  async function protectPopup() {
-    const boardProtected = await isProtected(board_id)
-    if (!boardProtected) {
-      Swal.fire({
-        title: "Protect Board",
-        html: `
-          <input type="password" id="pass-input" class="swal2-input" placeholder="Password" style="font-family: Space Mono"/>
-        `,
-        confirmButtonColor: '#577399',
-        confirmButtonText: `<span style="font-family: Space Mono">Protect</span>`,
-        preConfirm: () => {
-          const passInput = Swal.getPopup().querySelector("#pass-input") as HTMLInputElement
-          const password = passInput.value
-          if (!password) {
-            Swal.showValidationMessage("Please enter a password")
-          }
-          return password
-        }
-      }).then(result => {
-        if (result.isConfirmed) {
-          protect(board_id, result.value).then(success => {
-            if (success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Board Protected',
-                confirmButtonColor: '#577399',
-                confirmButtonText: `<span style="font-family: Space Mono">OK</span>`
-              })
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error Protecting Board',
-              })
-            }
-          })
-        }
-      })
-    } else {
-      Swal.fire({
-        title: "Update Password",
-        text: "This board is password protected",
-        html: `
-          <input type="password" id="pass-input" class="swal2-input" placeholder="Password" style="font-family: Space Mono"/>
-          <input type="password" id="new-pass-input" class="swal2-input" placeholder="New Password" style="font-family: Space Mono"/>
-        `,
-        confirmButtonColor: '#577399',
-        confirmButtonText: `<span style="font-family: Space Mono">Update</span>`,
-        preConfirm: () => {
-          const oldPassInput = Swal.getPopup().querySelector("#pass-input") as HTMLInputElement
-          const newPassInput = Swal.getPopup().querySelector("#new-pass-input") as HTMLInputElement
-          const oldPassword = oldPassInput.value
-          const newPassword = newPassInput.value
-          if (!oldPassword || !newPassword) {
-            Swal.showValidationMessage("Please enter a value for password")
-          } else {
-            return { oldPassword, newPassword }
-          }
-        },
-        showDenyButton: true,
-        denyButtonText: `<span style="font-family: Space Mono">Remove Password</span>`,
-        preDeny: () => {
-          const oldPassInput = Swal.getPopup().querySelector("#pass-input") as HTMLInputElement
-          const oldPassword = oldPassInput.value
-          if (!oldPassword) {
-            Swal.showValidationMessage("Please enter your current password in the first box")
-            return false
-          } else {
-            return { oldPassword }
-          }
-        },
-        reverseButtons: true,
-      }).then(result => {
-        if (result.isConfirmed || result.isDenied) {
-          let { oldPassword, newPassword } = result.value
-          if (result.isDenied) {
-            newPassword = ""
-          }
-          updatePassword(board_id, oldPassword, newPassword).then(success => {
-            if (success) {
-              Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: 'Password Updated',
-                confirmButtonColor: '#577399',
-                confirmButtonText: `<span style="font-family: Space Mono">OK</span>`
-              })
-            } else {
-              Swal.fire({
-                icon: 'error',
-                title: 'Error Updating Password',
-              })
-            }
-          })
-        }
-      })
-    }
+  function updateStickyLog(username, title){
+    const newLog = document.createElement('p')
+    newLog.classList.add("log-entry")
+    newLog.innerHTML = `<span class="log-keyword">` + username + `</span> updated sticky titled `
+    + `<span class="log-keyword">` + title + `</span>`
+    const logArea = document.querySelector(".log-console")
+    logArea.appendChild(newLog)
+    logArea.scrollTop = logArea.scrollHeight
+    logMessage(board_id, `${username} updated sticky titled ${title}`)
+  }
+
+  function deleteStickyLog(username, title){
+    const newLog = document.createElement('p')
+    newLog.classList.add("log-entry")
+    newLog.innerHTML = `<span class="log-keyword">` + username + `</span> removed the sticky with title `
+    + `<span class="log-keyword">` + title + `</span>`
+    const logArea = document.querySelector(".log-console")
+    logArea.appendChild(newLog)
+    logArea.scrollTop = logArea.scrollHeight
+    logMessage(board_id, `${username} removed the sticky with title ${title}`)
   }
 
   function clearBoard() {
     [...document.querySelectorAll('.sticky')].forEach(sticky => sticky.remove())
-  }
-
-  document.body.onresize = () => {
-    // get board and position all stickies
-    // clearBoard()
-    // loadBoard()
   }
 
   document.querySelector(".share-btn").addEventListener("click", (e) => {
@@ -614,7 +486,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
   document.querySelector(".lock-btn").addEventListener("click", (e) => {
     e.preventDefault()
-    protectPopup()
+    protectPopup(board_id)
   })
   document.querySelector(".name-input").addEventListener("blur", (e) => {
     username = (e.target as HTMLInputElement).value
@@ -626,13 +498,6 @@ document.addEventListener("DOMContentLoaded", () => {
   })
   document.querySelector(".info-btn").addEventListener("click", (e) => {
     e.preventDefault()
-    Swal.fire({
-      icon: "info",
-      title: "About",
-      iconColor: "#577399",
-      showCloseButton: true,
-      showConfirmButton: false,
-      html: "FourQuadrant is an open-source program maintained and run by <a href=\"https://judyn.me\">Judy</a> and <a href=\"https://www.julienbl.me\">Julien</a>, two students at the University of Toronto.<br>Check out the source code on github and join our slack to chat with us!<br><br><a href=\"https://github.com/judy-n/FourQuadrant\" class=\"gh-btn\"><img class=\"brand-img\" src=\"../icons/GitHub-Mark-120px-plus.png\"><span class=\"brand-tt\">See our code!</span></img></a><a href=\"https://join.slack.com/t/fourquadrantworkspace/shared_invite/zt-138mkw6v6-1eraHaxQ~PTBQsGp59mJmQ\" class=\"gh-btn\"><img class=\"brand-img\" src=\"../icons/Slack_Mark_Web.png\"><span class=\"brand-tt\">Join our Slack!</span></img></a>"
-    })
+    infoPopup();
   })
 });
