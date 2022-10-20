@@ -2,13 +2,14 @@ import axios from "axios";
 import type { BoardDoc, Note, NoteDoc } from "./types";
 
 // different port for dev server ???
+//@ts-ignore
+const { VITE_API_URL, VITE_LOCAL_API_URL } = import.meta.env;
 let baseURL =
   //@ts-ignore
-  import.meta.env.MODE === "development"
-    ? "http://localhost:8081/api"
-    : `https://${process.env.API_URL}/api`;
+  import.meta.env.MODE === "production" ? VITE_API_URL : VITE_LOCAL_API_URL;
 
-console.log("with", baseURL);
+//@ts-ignore
+console.log("with", baseURL, JSON.stringify(import.meta.env));
 
 // where the frontend communicates with the backend
 const instance = axios.create({
@@ -165,4 +166,5 @@ export const updatePassword = async (
   if (success) {
     return await protect(board_id, newPassword);
   }
+  return Promise.reject("failed to protect board");
 };

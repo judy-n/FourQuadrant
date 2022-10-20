@@ -1,10 +1,14 @@
 services:
   fq-server:
+    depends_on:
+      - mongodb
     build:
       context: server
     ports:
       - 8080:8080
   fq-client:
+    depends_on:
+      - fq-server
     build:
       context: client
     ports:

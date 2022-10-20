@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "vite --port 8081",
-    "build": "vite build",
+    "build-dev": "vite build -m development",
+    "build": "vite build -m production",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -17,8 +18,10 @@
   },
   "dependencies": {
     "axios": "^0.26.1",
+    "dotenv": "^16.0.3",
     "granim": "^2.0.0",
     "interactjs": "^1.10.11",
+    "serve": "^14.0.1",
     "socket.io-client": "^4.4.1",
     "sweetalert2": "^11.4.8",
     "typescript": "^4.6.3"

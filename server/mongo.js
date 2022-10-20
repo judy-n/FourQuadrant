@@ -1,13 +1,19 @@
 require("dotenv").config();
+console.log("WHAT IS", process.env.MONGODB_URI)
 const { MongoClient, ObjectId } = require("mongodb");
 const bcrypt = require("bcryptjs");
-console.log("WHAT", process.env.DB_USERNAME, process.env.DB_PASSWORD);
 const uri = process.env.MONGODB_URI;
-const client = new MongoClient(uri);
-client
-  .connect()
-  .then(() => console.log("mongo connected"))
-  .catch((err) => console.error(err));
+const client = new MongoClient("mongodb://root:rootpassword@mongodb");
+
+(async () => {
+  try {
+    await client.connect()
+    console.log("SET UP MONGODB")
+  } catch (e) {
+    console.error(e)
+    throw new Error("ERROR SETTING UP MONGODB")
+  }
+})()
 
 async function listDatabases() {
   databasesList = await client.db().admin().listDatabases();

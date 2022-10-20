@@ -1,10 +1,10 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
 
-export default defineConfig(({ command, mode }) => {
-    if (command === "build") {
+export default defineConfig(({ mode }) => {
+    if (mode === 'production') {
         return {
-            mode: "production",
+            mode: 'production',
             build: {
                 rollupOptions: {
                     input: {
@@ -14,11 +14,13 @@ export default defineConfig(({ command, mode }) => {
                         error: resolve(__dirname, 'error/index.html')
                     }
                 }
-            }
+            },
+            envDir: './env'
         }
     } else {
         return {
-            mode: "development"
+            mode: 'development',
+            envDir: './env'
         }
     }
 })
