@@ -3,10 +3,8 @@ import type { BoardDoc, Note, NoteDoc } from "./types";
 
 // different port for dev server ???
 //@ts-ignore
-const { VITE_API_URL, VITE_LOCAL_API_URL } = import.meta.env;
-let baseURL =
-  //@ts-ignore
-  import.meta.env.MODE === "production" ? VITE_API_URL : VITE_LOCAL_API_URL;
+const { VITE_API_URL, VITE_API_DEV_URL, MODE } = import.meta.env;
+let baseURL = MODE === "development" ? VITE_API_DEV_URL : VITE_API_URL;
 
 //@ts-ignore
 console.log("with", baseURL, JSON.stringify(import.meta.env));
@@ -22,7 +20,6 @@ export const createBoard = (): Promise<BoardDoc> => {
   return instance
     .post("/board", {}, { timeout: 20000 })
     .then((res) => {
-      console.log("in tyhen");
       return res.data.board;
     })
     .catch((err) => {

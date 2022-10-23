@@ -8,7 +8,7 @@ const client = new MongoClient("mongodb://root:rootpassword@mongodb");
 (async () => {
   try {
     await client.connect()
-    console.log("SET UP MONGODB")
+    console.log("SET UP MONGODB SUCKAA")
   } catch (e) {
     console.error(e)
     throw new Error("ERROR SETTING UP MONGODB")

@@ -7,7 +7,12 @@ const http = require("http")
 const app = express()
 const server = http.createServer(app)
 const { Server } = require("socket.io")
-const io = new Server(server)
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:8081',
+    methods: ['GET', 'POST', 'PATCH', 'DELETE']
+  }
+})
 const port = process.env.PORT || 8080
 const router = require("./router")
 const Sentencer = require("sentencer")
@@ -33,8 +38,13 @@ if (process.env.NODE_ENV === "development") {
   console.log('allowing')
   app.use(cors())
 }
+
+app.use((req, res, next) => {
+  console.log("accepting", req.url, res.url)
+  next()
+})
   
-app.use('/api', router);
+app.use('/', router);
 
 app.use(
   session({
@@ -51,7 +61,7 @@ app.use(
   })
 );
 
-app.get('/api/username', async (req, res, next) => {
+app.get('/username', async (req, res, next) => {
   if (!req.session || !req.session.username) {
     req.session.username = Sentencer.make("{{ adjective }}-{{ noun }}")
   }
@@ -59,7 +69,7 @@ app.get('/api/username', async (req, res, next) => {
   res.send({ username: req.session.username })
 })
 
-app.post('/api/username', async (req, res, next) => {
+app.post('/username', async (req, res, next) => {
   const { username } = req.body
   if (req.session) {
     req.session.username = username
@@ -77,9 +87,9 @@ function requireHTTPS(req, res, next) {
   next();
 }
 
-app.get('/', requireHTTPS, function(req, res) {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-})
+// app.get('/', requireHTTPS, function(req, res) {
+//   res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+// })
 
 app.get('/admin', requireHTTPS, function(req, res) {
   res.sendFile(path.join(__dirname, '../client/dist/admin/index.html'))

@@ -12,7 +12,7 @@ import { Pos, Size } from "../types";
 import { infoPopup, openPopup, protectPopup } from './popups'
 // mock actions for dev environment
 
-const socket = io()
+const socket = io('http://localhost:8080')
 const board_id = mode === "development" ?  sessionStorage.getItem("__dev_boardId") : window.location.href.split('/')[3]
 console.log("What is", board_id)
 const defaultPos = {left: 0, top: 0}

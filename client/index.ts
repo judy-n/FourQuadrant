@@ -24,7 +24,7 @@ const newBoard = async () => {
   }
 }
 
-document.querySelector(".cta").addEventListener("click", function(this: HTMLButtonElement) {
+document.querySelector(".cta")?.addEventListener("click", function(this: HTMLButtonElement) {
   this.classList.add("active")
   setTimeout(() => {
     this.classList.remove("active")
