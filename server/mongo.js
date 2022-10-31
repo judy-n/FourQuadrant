@@ -202,7 +202,7 @@ async function clearLog(board_id) {
   const res = await client
     .db("FourQuadrant")
     .collection("Boards")
-    .updateOne({ _id: board_id }, { log: [] });
+    .updateOne({ _id: board_id }, {$set: { log: [] }});
 }
 
 async function logVisitor(username) {
