@@ -1,0 +1,782 @@
+{
+	"info": {
+		"_postman_id": "73fb37bc-ed69-4e27-8f02-d3d5305b9f0d",
+		"name": "FourQuadrant",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12759850"
+	},
+	"item": [
+		{
+			"name": "Set Active User [test-username]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"All Good\", function () {",
+							"    pm.response.to.have.status(200)",
+							"    var jsonData = pm.response.json();",
+							"    pm.expect(jsonData.message).to.eql(\"success\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test-username\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/username",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"username"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Active User [test-username]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Gets username set in previous request', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.username).to.eql(\"test-username\")",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/username",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"username"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const hasExpectedKeys = (obj, expected) => _.isEqual(_.intersection(Object.keys(obj), expected), expected)",
+							"",
+							"pm.test('Creates board correctly', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    const expected = [\"_id\", \"notes\", \"log\", \"createdAt\", \"password\", \"isProtected\", \"name\"]",
+							"    pm.expect(hasExpectedKeys(jsonData.board, expected)).to.eql(true)",
+							"    pm.expect(jsonData.board.name).to.eql(\"My Board\")",
+							"",
+							"    pm.collectionVariables.set('board_id', jsonData.board._id)",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/board",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"board"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Note to Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Adds note to created board', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.newNote.title).to.eql(\"New Note 1\")",
+							"    pm.expect(jsonData.newNote.text).to.eql(\"New Note Text 1\")",
+							"    pm.expect(jsonData.newNote.pos).to.eql({x: \"0.6\", y: \"0.2\"})",
+							"",
+							"    pm.collectionVariables.set('note_id', jsonData.newNote._id)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"note\": {\n        \"title\": \"New Note 1\",\n        \"text\": \"New Note Text 1\",\n        \"pos\": {\n            \"x\": \"0.6\",\n            \"y\": \"0.2\"\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/note/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"note",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Gets created board with new note', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.board._id).to.eql(pm.collectionVariables.get('board_id'))",
+							"    const foundNote = jsonData.board.notes.find(note => note._id === pm.collectionVariables.get('note_id'))",
+							"    pm.expect(foundNote).to.exist",
+							"    pm.expect(foundNote).to.include({title: \"New Note 1\"})",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/board/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"board",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Rename Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Successfully renames board', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.message).to.eql('success!')",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"My Renamed Board\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/board/rename/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"board",
+						"rename",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Note",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('gets created note successfully', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.note).include({_id: pm.collectionVariables.get('note_id'), title: \"New Note 1\"})",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/note/{{note_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"note",
+						"{{note_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Note Content",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Correctly updates note', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.note).to.eql({",
+							"        _id: pm.collectionVariables.get('note_id'),",
+							"        title: \"Updated Note 1\",",
+							"        text: \"Updated Note Text 1\"",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"note\": {\n        \"_id\": \"{{note_id}}\",\n        \"title\": \"Updated Note 1\",\n        \"text\": \"Updated Note Text 1\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/note",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"note"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Note Position",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Correctly updates note', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.pos).to.eql({",
+							"        x: \"0.5\",",
+							"        y: \"0.7\"",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"pos\": {\n        \"x\": \"0.5\",\n        \"y\": \"0.7\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/note/{{note_id}}/position",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"note",
+						"{{note_id}}",
+						"position"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Note Size",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Correctly updates note', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.size).to.eql({",
+							"        width: \"550\",",
+							"        height: \"125\"",
+							"    })",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"size\": {\n        \"width\": \"550\",\n        \"height\": \"125\"\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/note/{{note_id}}/size",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"note",
+						"{{note_id}}",
+						"size"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Logged Message",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Successfully adds a log to the board', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.message).to.eql('This is a logged message')",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"message\": \"This is a logged message\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/board/{{board_id}}/log",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"board",
+						"{{board_id}}",
+						"log"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Board is Protected [pre-pass]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Board is not protected', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.isProtected).to.eql(false)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/isProtected/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"isProtected",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Protect Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('protects the board', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.success).to.eql(true)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": \"{{board_pass}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/protect/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"protect",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Board is Protected [post-pass]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Board is not protected', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.isProtected).to.eql(true)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/isProtected/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"isProtected",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Password",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('checks the board password', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.success).to.eql(true)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": \"{{board_pass}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/checkPassword/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"checkPassword",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Unprotect Board",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"password\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/protect/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"protect",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Check Board is Protected [post-remove]",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Board is not protected', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.isProtected).to.eql(false)",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/isProtected/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"isProtected",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Clear Logs",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('clears logs', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.message).to.eql(\"success!\")",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/board/{{board_id}}/log",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"board",
+						"{{board_id}}",
+						"log"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Note",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Successfully deletes note', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.note._id)",
+							"        .to.eql(pm.collectionVariables.get('note_id'))",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/note/{{note_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"note",
+						"{{note_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Board",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Successfully deletes board', () => {",
+							"    pm.response.to.have.status(200)",
+							"    const jsonData = pm.response.json()",
+							"    pm.expect(jsonData.board._id)",
+							"        .to.eql(pm.collectionVariables.get('board_id'))",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/board/{{board_id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"board",
+						"{{board_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "board_id",
+			"value": ""
+		},
+		{
+			"key": "note_id",
+			"value": ""
+		}
+	]
+}
