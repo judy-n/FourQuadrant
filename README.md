@@ -1,4 +1,4 @@
-<img src="client/static/icons/4Q2.png" width=200px>
+<img src="client/icons/4Q2.png" width=200px>
 
 # FourQuadrant
 
