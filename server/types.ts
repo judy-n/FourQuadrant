@@ -1,7 +1,6 @@
-import { ObjectId } from "mongodb";
+import { ObjectId, WithId } from "mongodb";
 
-export interface INote {
-  _id: ObjectId;
+export interface INote extends WithId<Document> {
   title: string;
   text: string;
   pos: {
@@ -15,8 +14,7 @@ export interface INote {
   createdAt: Date;
 }
 
-export interface IBoard {
-  _id: ObjectId;
+export interface IBoard extends WithId<Document> {
   notes: ObjectId[];
   log: string[];
   createdAt: Date;
