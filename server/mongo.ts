@@ -1,28 +1,29 @@
-require("dotenv").config();
-console.log("WHAT IS", process.env.MONGODB_URI)
-const { MongoClient, ObjectId } = require("mongodb");
-const bcrypt = require("bcryptjs");
-const uri = process.env.MONGODB_URI;
+import { config } from "dotenv";
+config();
+import { MongoClient, ObjectId } from "mongodb";
+import bcrypt from "bcryptjs";
+import { IBoard, IBoardPopulated, INote, IVisit } from "./types";
 const client = new MongoClient("mongodb://root:rootpassword@mongodb");
 
 (async () => {
   try {
-    await client.connect()
-    console.log("SET UP MONGODB SUCKAA")
+    await client.connect();
+    console.log("SET UP MONGODB SUCKAA");
   } catch (e) {
-    console.error(e)
-    throw new Error("ERROR SETTING UP MONGODB")
+    console.error(e);
+    throw new Error("ERROR SETTING UP MONGODB");
   }
-})()
-
-async function listDatabases() {
-  databasesList = await client.db().admin().listDatabases();
-
-  console.log("Databases:");
-  databasesList.databases.forEach((db) => console.log(` - ${db.name}`));
-}
+})();
 
 class Board {
+  _id: ObjectId;
+  notes: ObjectId[];
+  log: string[];
+  createdAt: Date;
+  password: string;
+  isProtected: boolean;
+  name: string;
+
   constructor() {
     this._id = new ObjectId();
     this.notes = [];
@@ -35,7 +36,14 @@ class Board {
 }
 
 class Note {
-  constructor({ title, text, pos, size }) {
+  _id: ObjectId;
+  title: string;
+  text: string;
+  pos: INote["pos"];
+  size: INote["size"];
+  createdAt: Date;
+
+  constructor({ title, text, pos, size }: INote) {
     this._id = new ObjectId();
     this.title = title;
     this.text = text;
@@ -45,23 +53,26 @@ class Note {
   }
 }
 
-class Visit {
-  constructor(username) {
+class Visit implements IVisit {
+  visitedAt: Date;
+  username: string;
+
+  constructor(username: string) {
     this.visitedAt = new Date();
     this.username = username || "[Name not set]";
   }
 }
 
-async function createBoard() {
+export const toObjectId = (objectId: string) =>
+  ObjectId.isValid(objectId) ? new ObjectId(objectId) : undefined;
+
+export async function createBoard() {
   const newBoard = new Board();
-  const resBoard = await client
-    .db("FourQuadrant")
-    .collection("Boards")
-    .insertOne(newBoard);
+  await client.db("FourQuadrant").collection("Boards").insertOne(newBoard);
   return newBoard;
 }
 
-async function createNote(board, note) {
+export async function createNote(board: IBoard, note: INote) {
   const newNote = new Note(note);
   await client.db("FourQuadrant").collection("Notes").insertOne(newNote);
   board.notes.push(newNote._id);
@@ -72,7 +83,7 @@ async function createNote(board, note) {
   return newNote;
 }
 
-async function readBoard(id) {
+export async function readBoard(id: ObjectId) {
   id = new ObjectId(id);
   const res = await client
     .db("FourQuadrant")
@@ -86,7 +97,7 @@ async function readBoard(id) {
   }
 }
 
-async function renameBoard(id, name) {
+export async function renameBoard(id: ObjectId, name: string) {
   // change board.name
   const res = await client
     .db("FourQuadrant")
@@ -96,7 +107,7 @@ async function renameBoard(id, name) {
   return res;
 }
 
-async function populateNotes(board) {
+export async function populateNotes(board: IBoard) {
   // call this function when you need note objects, not just ids
   const notes = board.notes.map((id) => new ObjectId(id));
   const noteObjs = await client
@@ -115,7 +126,7 @@ async function populateNotes(board) {
   }
 }
 
-async function readNote(id) {
+export async function readNote(id: ObjectId) {
   id = new ObjectId(id);
   const res = await client
     .db("FourQuadrant")
@@ -129,7 +140,7 @@ async function readNote(id) {
   }
 }
 
-async function removeBoard(board) {
+export async function removeBoard(board: IBoardPopulated) {
   for (let i = 0; i < board.notes.length; i++) {
     await client
       .db("FourQuadrant")
@@ -143,7 +154,7 @@ async function removeBoard(board) {
   return;
 }
 
-async function removeNote(note) {
+export async function removeNote(note: INote) {
   await client
     .db("FourQuadrant")
     .collection("Notes")
@@ -155,70 +166,70 @@ async function removeNote(note) {
   return;
 }
 
-async function updateNote(note) {
+export async function updateNote(note: INote) {
   note._id = new ObjectId(note._id);
-  const res = await client
+  await client
     .db("FourQuadrant")
     .collection("Notes")
     .updateOne({ _id: note._id }, { $set: note });
 }
 
-async function updateNotePos(note_id, pos) {
+export async function updateNotePos(note_id: ObjectId, pos: INote["pos"]) {
   note_id = new ObjectId(note_id);
   const res = await client
     .db("FourQuadrant")
     .collection("Notes")
-    .updateOne(
+    .findOneAndUpdate(
       { _id: note_id },
       { $set: { pos } },
-      { returnNewDocument: true }
+      { returnDocument: "after" }
     );
   return res;
 }
 
-async function updateNoteSize(note_id, size) {
+export async function updateNoteSize(note_id: ObjectId, size: INote["size"]) {
   note_id = new ObjectId(note_id);
   const res = await client
     .db("FourQuadrant")
     .collection("Notes")
-    .updateOne(
+    .findOneAndUpdate(
       { _id: note_id },
       { $set: { size } },
-      { returnNewDocument: true }
+      { returnDocument: "after" }
     );
   return res;
 }
 
-async function logMessage(board_id, message) {
+export async function logMessage(board_id: ObjectId, message: string) {
   board_id = new ObjectId(board_id);
-  const res = await client
+  await client
     .db("FourQuadrant")
     .collection("Boards")
     .updateOne({ _id: board_id }, { $push: { log: message } });
 }
 
-async function clearLog(board_id) {
+export async function clearLog(board_id: ObjectId) {
   board_id = new ObjectId(board_id);
-  const res = await client
+  await client
     .db("FourQuadrant")
     .collection("Boards")
-    .updateOne({ _id: board_id }, {$set: { log: [] }});
+    .updateOne({ _id: board_id }, { $set: { log: [] } });
 }
 
-async function logVisitor(username) {
-  let visit = new Visit(username);
+export async function logVisitor(username: string) {
+  const visit = new Visit(username);
   await client.db("FourQuadrant").collection("Visits").insertOne(visit);
   return visit;
 }
 
-async function getAdminStats(secret) {
+export async function getAdminStats(secret: string) {
   return await client
     .db("FourQuadrant")
     .collection("Insights")
     .findOne({ secret });
 }
 
-async function isProtected(board_id) {
+export async function isProtected(board_id: ObjectId) {
   board_id = new ObjectId(board_id);
   const board = await client
     .db("FourQuadrant")
@@ -227,7 +238,7 @@ async function isProtected(board_id) {
   return board && board.isProtected;
 }
 
-async function protect(board_id, password) {
+export async function protect(board_id: ObjectId, password: string) {
   board_id = new ObjectId(board_id);
   let isProtected = true;
   if (!password) {
@@ -240,7 +251,7 @@ async function protect(board_id, password) {
     .updateOne({ _id: board_id }, { $set: { password, isProtected } });
 }
 
-async function checkPassword(board_id, password) {
+export async function checkPassword(board_id: ObjectId, password: string) {
   board_id = new ObjectId(board_id);
   const resPassword = (
     (await client
@@ -251,33 +262,9 @@ async function checkPassword(board_id, password) {
   return bcrypt.compareSync(password, resPassword);
 }
 
-async function WAWVisit() {
+export async function WAWVisit() {
   return await client
     .db("WhatsAppWrapped")
     .collection("Visits")
     .insertOne({ visitedAt: new Date() });
 }
-
-module.exports = {
-  Board,
-  Note,
-  createNote,
-  createBoard,
-  readBoard,
-  renameBoard,
-  populateNotes,
-  readNote,
-  removeBoard,
-  removeNote,
-  updateNote,
-  updateNotePos,
-  updateNoteSize,
-  logMessage,
-  clearLog,
-  logVisitor,
-  getAdminStats,
-  isProtected,
-  protect,
-  checkPassword,
-  WAWVisit,
-};
