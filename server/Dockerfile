@@ -10,4 +10,4 @@ COPY . .
 
 EXPOSE 8080
 
-CMD [ "ts-node", "index.ts" ]
+CMD [ "npx", "ts-node", "index.ts" ]

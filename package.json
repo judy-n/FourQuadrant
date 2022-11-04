@@ -118,7 +118,7 @@
     "yargs-parser": "^20.2.9"
   },
   "scripts": {
-    "start": "docker-compose up",
+    "start": "docker-compose up --build",
     "down": "docker-compose down"
   },
   "repository": {
