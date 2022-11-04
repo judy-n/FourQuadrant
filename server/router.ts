@@ -21,9 +21,6 @@ function handleError(err: Error, res: Response) {
   }
 }
 
-const toObjectId = (objectId: string) =>
-  ObjectId.isValid(objectId) ? new ObjectId(objectId) : undefined;
-
 const idChecker = async (req: Request, res: Response, next: NextFunction) => {
   if (req.params.board_id && !ObjectId.isValid(req.params.board_id)) {
     console.log("invalid board id:", req.params.board_id);
@@ -56,7 +53,7 @@ router.post("/board", (_req: Request, res: Response, next: NextFunction) => {
 
 router.post("/note/:board_id", idChecker, async (req, res, next) => {
   const { note } = req.body;
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
   try {
     const board = boardId ? await mongo.readBoard(boardId) : undefined;
     if (!board) {
@@ -80,7 +77,7 @@ router.post("/note/:board_id", idChecker, async (req, res, next) => {
 });
 
 router.get("/board/:board_id", idChecker, async (req, res, next) => {
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
   try {
     let board = boardId ? await mongo.readBoard(boardId) : undefined;
     board = board ? await mongo.populateNotes(board as IBoard) : undefined;
@@ -100,7 +97,7 @@ router.get("/board/:board_id", idChecker, async (req, res, next) => {
 
 router.post("/board/rename/:board_id", idChecker, async (req, res) => {
   const { name } = req.body;
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
 
   try {
     if (boardId) {
@@ -115,7 +112,7 @@ router.post("/board/rename/:board_id", idChecker, async (req, res) => {
 });
 
 router.get("/note/:note_id", idChecker, (req, res, next) => {
-  const noteId = toObjectId(req.params.note_id);
+  const noteId = mongo.toObjectId(req.params.note_id);
   if (noteId) {
     mongo
       .readNote(noteId)
@@ -137,7 +134,7 @@ router.get("/note/:note_id", idChecker, (req, res, next) => {
 });
 
 router.delete("/board/:board_id", idChecker, async (req, res, next) => {
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
   try {
     const board = boardId ? await mongo.readBoard(boardId) : undefined;
     if (board) {
@@ -156,7 +153,7 @@ router.delete("/board/:board_id", idChecker, async (req, res, next) => {
 });
 
 router.delete("/note/:note_id", idChecker, async (req, res, next) => {
-  const noteId = toObjectId(req.params.note_id);
+  const noteId = mongo.toObjectId(req.params.note_id);
   try {
     const note = noteId ? await mongo.readNote(noteId) : undefined;
     if (note) {
@@ -190,7 +187,7 @@ router.patch("/note", async (req, res, next) => {
 
 router.patch("/note/:note_id/position", idChecker, async (req, res, next) => {
   const { pos } = req.body;
-  const noteId = toObjectId(req.params.note_id);
+  const noteId = mongo.toObjectId(req.params.note_id);
   try {
     if (noteId) {
       await mongo.updateNotePos(noteId, pos);
@@ -207,7 +204,7 @@ router.patch("/note/:note_id/position", idChecker, async (req, res, next) => {
 
 router.patch("/note/:note_id/size", idChecker, async (req, res, next) => {
   const { size } = req.body;
-  const noteId = toObjectId(req.params.note_id);
+  const noteId = mongo.toObjectId(req.params.note_id);
   try {
     if (noteId) {
       await mongo.updateNoteSize(noteId, size);
@@ -224,7 +221,7 @@ router.patch("/note/:note_id/size", idChecker, async (req, res, next) => {
 
 router.patch("/board/:board_id/log", idChecker, async (req, res, next) => {
   const { message } = req.body;
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
   try {
     if (boardId) {
       await mongo.logMessage(boardId, message);
@@ -240,7 +237,7 @@ router.patch("/board/:board_id/log", idChecker, async (req, res, next) => {
 });
 
 router.delete("/board/:board_id/log", idChecker, async (req, res, next) => {
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
   try {
     if (boardId) {
       await mongo.clearLog(boardId);
@@ -270,7 +267,7 @@ router.post("/adminStats", async (req, res, next) => {
 });
 
 router.get("/isProtected/:board_id", idChecker, async (req, res, next) => {
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
   try {
     if (boardId) {
       const isProtected = await mongo.isProtected(boardId);
@@ -288,7 +285,7 @@ router.get("/isProtected/:board_id", idChecker, async (req, res, next) => {
 });
 
 router.post("/protect/:board_id", idChecker, async (req, res, next) => {
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
   try {
     const { password } = req.body;
     if (boardId) {
@@ -307,7 +304,7 @@ router.post("/protect/:board_id", idChecker, async (req, res, next) => {
 });
 
 router.post("/checkPassword/:board_id", idChecker, async (req, res, next) => {
-  const boardId = toObjectId(req.params.board_id);
+  const boardId = mongo.toObjectId(req.params.board_id);
   try {
     const { password } = req.body;
     if (boardId) {
@@ -331,4 +328,4 @@ router.get("/whatsappwrapped", (_req, res) => {
   res.send({ message: "success" });
 });
 
-module.exports = router;
+export default router;
