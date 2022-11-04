@@ -2,6 +2,7 @@ import { NextFunction, Request, Response, Router } from "express";
 import * as mongo from "./mongo";
 import { ObjectId } from "mongodb";
 import { IBoard, IBoardPopulated, INote } from "./types";
+import Logger from "js-logger";
 const router = Router();
 
 // helper function for you <3
@@ -13,13 +14,19 @@ function isMongoError(error: Error) {
   );
 }
 
-function handleError(err: Error, res: Response) {
+const handleError = (res: Response) => (err: unknown) => {
+  if (!(err instanceof Error)) {
+    Logger.error("Unexpected Caught Error", err);
+    return;
+  }
   if (isMongoError(err)) {
     res.status(500).send("internal server error");
+    Logger.error("Caught Internal Server Error", "Sending 500", err);
   } else {
     res.status(400).send("bad request");
+    Logger.error("Caught Bad Request", "Sending 400", err);
   }
-}
+};
 
 const idChecker = async (req: Request, res: Response, next: NextFunction) => {
   if (req.params.board_id && !ObjectId.isValid(req.params.board_id)) {
@@ -35,7 +42,7 @@ const idChecker = async (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-router.post("/board", (_req: Request, res: Response, next: NextFunction) => {
+router.post("/board", (_req: Request, res: Response) => {
   mongo
     .createBoard()
     .then((board) => {
@@ -45,10 +52,7 @@ router.post("/board", (_req: Request, res: Response, next: NextFunction) => {
         res.status(500).send("unknown error");
       }
     })
-    .catch((err) => {
-      handleError(err, res);
-      next();
-    });
+    .catch(handleError(res));
 });
 
 router.post("/note/:board_id", idChecker, async (req, res, next) => {
@@ -67,11 +71,8 @@ router.post("/note/:board_id", idChecker, async (req, res, next) => {
         res.status(500).send("unknown error");
       }
     }
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err: unknown) {
+    handleError(res)(err);
     next();
   }
 });
@@ -86,11 +87,8 @@ router.get("/board/:board_id", idChecker, async (req, res, next) => {
     } else {
       res.status(404).send("board not found");
     }
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -104,10 +102,8 @@ router.post("/board/rename/:board_id", idChecker, async (req, res) => {
       await mongo.renameBoard(boardId, name);
     }
     res.send({ message: "success!" });
-  } catch (e: unknown) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
+  } catch (err) {
+    handleError(res)(err);
   }
 });
 
@@ -123,11 +119,7 @@ router.get("/note/:note_id", idChecker, (req, res, next) => {
           res.status(404).send("board not found");
         }
       })
-      .catch((err: Error) => {
-        handleError(err, res);
-        console.log("error", err);
-        next();
-      });
+      .catch(handleError(res));
   } else {
     next();
   }
@@ -144,10 +136,7 @@ router.delete("/board/:board_id", idChecker, async (req, res, next) => {
       res.status(404).send("board not found");
     }
   } catch (err) {
-    if (err instanceof Error) {
-      handleError(err, res);
-    }
-    console.log("error", err);
+    handleError(res)(err);
     next();
   }
 });
@@ -163,10 +152,7 @@ router.delete("/note/:note_id", idChecker, async (req, res, next) => {
       res.status(404).send("note not found");
     }
   } catch (err) {
-    if (err instanceof Error) {
-      handleError(err, res);
-    }
-    console.log("error", err);
+    handleError(res);
     next();
   }
 });
@@ -176,11 +162,8 @@ router.patch("/note", async (req, res, next) => {
   try {
     await mongo.updateNote(note);
     res.send({ note });
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -193,11 +176,8 @@ router.patch("/note/:note_id/position", idChecker, async (req, res, next) => {
       await mongo.updateNotePos(noteId, pos);
     }
     res.send({ pos });
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -210,11 +190,8 @@ router.patch("/note/:note_id/size", idChecker, async (req, res, next) => {
       await mongo.updateNoteSize(noteId, size);
     }
     res.send({ size });
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -227,11 +204,8 @@ router.patch("/board/:board_id/log", idChecker, async (req, res, next) => {
       await mongo.logMessage(boardId, message);
     }
     res.send({ message });
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -243,11 +217,8 @@ router.delete("/board/:board_id/log", idChecker, async (req, res, next) => {
       await mongo.clearLog(boardId);
     }
     res.send({ message: "success!" });
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -257,11 +228,8 @@ router.post("/adminStats", async (req, res, next) => {
   try {
     const stats = await mongo.getAdminStats(secret);
     res.send({ stats });
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -275,11 +243,8 @@ router.get("/isProtected/:board_id", idChecker, async (req, res, next) => {
     } else {
       res.status(400).send("invalid board id");
     }
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -294,11 +259,8 @@ router.post("/protect/:board_id", idChecker, async (req, res, next) => {
     } else {
       res.status(400).send("invalid board id");
     }
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
@@ -313,11 +275,8 @@ router.post("/checkPassword/:board_id", idChecker, async (req, res, next) => {
     } else {
       res.status(400).send("invalid board id");
     }
-  } catch (e) {
-    if (e instanceof Error) {
-      handleError(e, res);
-    }
-    console.log("error", e);
+  } catch (err) {
+    handleError(res)(err);
     next();
   }
 });
