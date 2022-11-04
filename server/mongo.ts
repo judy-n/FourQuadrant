@@ -15,7 +15,7 @@ const client = new MongoClient("mongodb://root:rootpassword@mongodb");
   }
 })();
 
-class Board implements IBoard {
+class Board {
   _id: ObjectId;
   notes: ObjectId[];
   log: string[];
@@ -35,7 +35,7 @@ class Board implements IBoard {
   }
 }
 
-class Note implements INote {
+class Note {
   _id: ObjectId;
   title: string;
   text: string;
@@ -62,6 +62,9 @@ class Visit implements IVisit {
     this.username = username || "[Name not set]";
   }
 }
+
+export const toObjectId = (objectId: string) =>
+  ObjectId.isValid(objectId) ? new ObjectId(objectId) : undefined;
 
 export async function createBoard() {
   const newBoard = new Board();
