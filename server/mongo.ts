@@ -3,7 +3,10 @@ config();
 import { MongoClient, ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { IBoard, IBoardPopulated, INote, IVisit } from "./types";
-const client = new MongoClient("mongodb://root:rootpassword@mongodb");
+if (typeof process.env.MONGODB_URI !== "string") {
+  throw new Error("Please use a .env file and provision the MONGODB_URI server.")
+}
+const client = new MongoClient(process.env.MONGODB_URI);
 
 (async () => {
   try {
