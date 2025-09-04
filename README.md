@@ -4,7 +4,7 @@
 
 FourQuadrant is a productivity web app that follows the Eisenhower method of time management. 
 
-Check it out here -> https://www.fourquadrant.tech/
+Check it out [here](https://fourquadrant-68-183-200-33.traefik.me/)
 
 
 ## Get Started
